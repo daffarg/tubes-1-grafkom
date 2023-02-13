@@ -9,6 +9,15 @@ var polygonVertex = []
 var polygonColor = []
 var hoverPolygon = false
 
+var lineVertex = []
+var lineColor = []
+
+var lineVertexTemp = []
+var lineColorTemp = [
+  0, 0, 0,
+  0, 0, 0
+]
+
 var polygonVertexTemp = []
 var polygonColorTemp = [
   0, 0, 0,    //V1.color
@@ -58,6 +67,29 @@ function makeBufferAndDraw(vertexData, colorData){
   gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 0, 0);
 
   gl.useProgram(program);
+}
+
+function handleLineButton() {
+  hoverLine = true
+
+  canvas.onmousedown = (e) => {
+    var clickX    = e.clientX;
+    var clickY   = e.clientY;
+    var rect = e.target.getBoundingClientRect();
+
+    var x, y;
+    // get mouse position
+    x = (2*(clickX - rect.left) - canvas.width) / canvas.width;
+    y = (canvas.height - 2*(clickY - rect.top)) / canvas.height;
+    console.log(x, y);
+
+    // add vertices
+    lineVertexTemp.push(x);
+    lineVertexTemp.push(y);
+
+    makeBufferAndDraw(lineVertexTemp, lineColorTemp);
+    gl.drawArrays(gl.LINES, x, 2);
+  }
 }
 
 function handlePolygonButton(){
