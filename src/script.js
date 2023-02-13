@@ -5,21 +5,38 @@ if(!gl){
   throw new Error('WebGL not supported')
 }
 
-var polygonVertex = []
-var polygonColor = []
-var hoverPolygon = false
+var polygon = {
+  vertex : [],
+  color : []
+}
 
-var polygonVertexTemp = []
-var polygonColorTemp = [
-  0, 0, 0,    //V1.color
-  0, 1, 0,
-  0, 0, 1,
-  1, 0, 0,
-  1, 1, 1,
-  1, 0, 1
-]
+var polygonTemp = {
+  vertex : [],
+  color : []
+}
 
-function makeBufferAndDraw(vertexData, colorData){
+function main() {  
+  //Polygon
+  makeBufferAndProgram(polygon.vertex, polygon.color);
+  var countPoly = polygon.vertex.length/2
+  if(countPoly >= 3){
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, countPoly)
+  }
+}
+
+
+function handlePolygon(){
+  canvas.addEventListener('mousedown', (event) => {
+    eventClickPolygon(event)
+  })
+
+  canvas.addEventListener('mousemove', (event) =>{
+    eventMovePolygon(event)
+  })
+} 
+
+
+function makeBufferAndProgram(vertexData, colorData){
   // Testing for Polygon
   const vertexBuffer = gl.createBuffer()
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
@@ -60,31 +77,26 @@ function makeBufferAndDraw(vertexData, colorData){
   gl.useProgram(program);
 }
 
-function handlePolygonButton(){
-  hoverPolygon = true
+function eventClickPolygon(e){
+  var clickX = e.clientX
+  var clickY = e.clientY
+  var rect = e.target.getBoundingClientRect();
 
-  canvas.onmousedown = (e) =>{
-    var clickX = e.clientX
-    var clickY = e.clientY
-    var rect = e.target.getBoundingClientRect();
+  var x,y;
+  x = (2*(clickX - rect.left) - canvas.width) / canvas.width;
+  y = (canvas.height - 2*(clickY - rect.top)) / canvas.height;
+  polygonTemp.vertex.push(x)
+  polygonTemp.vertex.push(y)
 
-    var x,y;
-    x = (2*(clickX - rect.left) - canvas.width) / canvas.width;
-    y = (canvas.height - 2*(clickY - rect.top)) / canvas.height;
-    polygonVertexTemp.push(x)
-    polygonVertexTemp.push(y)
-
-    console.log(polygonVertexTemp)
-    makeBufferAndDraw(polygonVertexTemp, polygonColorTemp);
-    var count = polygonVertexTemp.length/2
+  makeBufferAndProgram(polygonTemp.vertex, polygonTemp.color)
+  var count = polygonTemp.vertex.length/2
     if(count >= 3){
       gl.drawArrays(gl.TRIANGLE_FAN, 0, count)
     }
-  }
+}
 
-  
-  canvas.onmousemove = (e) => {
-    var clickX = e.clientX
+function eventMovePolygon(e){
+  var clickX = e.clientX
     var clickY = e.clientY
     var rect = e.target.getBoundingClientRect();
 
@@ -92,32 +104,32 @@ function handlePolygonButton(){
     x = (2*(clickX - rect.left) - canvas.width) / canvas.width;
     y = (canvas.height - 2*(clickY - rect.top)) / canvas.height;
     
-    if(polygonVertexTemp.length >= 6 && hoverPolygon){
-      polygonVertexTemp[polygonVertexTemp.length-2] = x
-      polygonVertexTemp[polygonVertexTemp.length-1] = y
+    if(polygonTemp.vertex.length >= 6){
+      polygonTemp.vertex[polygonTemp.vertex.length-2] = x
+      polygonTemp.vertex[polygonTemp.vertex.length-1] = y
     }
 
-    makeBufferAndDraw(polygonVertexTemp, polygonColorTemp);
-    var count = polygonVertexTemp.length/2
+    makeBufferAndProgram(polygonTemp.vertex, polygonTemp.color);
+    var count = polygonTemp.vertex.length/2
     if(count >= 2){
       gl.drawArrays(gl.TRIANGLE_FAN, 0, count)
     }
-  }  
 }
 
-// function finishPolygon(){
-//   canvas.removeEventListener('mousedown', () =>{console.log('removed');})
-//   canvas.removeEventListener('mousemove', () =>{console.log('removed');})
-//   polygonVertex.push(polygonVertexTemp)
-//   polygonColor.push(polygonColorTemp)
+function finalizePolygon() {
+  console.log('ini sebelum', polygonTemp.vertex)
+  polygonTemp.vertex.pop()
+  polygonTemp.vertex.pop()
+  console.log('ini sesudah', polygonTemp.vertex)
+
+  polygon.vertex.push(polygonTemp.vertex)
+  polygon.color.push(polygonTemp.color)
   
-//   polygonVertexTemp = []
-//   polygonColorTemp = []
+  polygonTemp.vertex = []
+  polygonTemp.color = []
 
-//   console.warn(polygonVertex)
+  polygon.vertex.pop()
+  polygon.vertex.pop()
+}
 
-//   makeBufferAndDraw(polygonVertex, polygonColor);
-//   var count = polygonVertex.length/2
-//   gl.drawArrays(gl.TRIANGLE_FAN, 0, count);
-// }
-
+window.onload = main();
