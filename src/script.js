@@ -1,8 +1,16 @@
 const canvas = document.querySelector('#canvas')
 const gl = canvas.getContext('webgl')
 
+isDown = false;
+
 if(!gl){
   throw new Error('WebGL not supported')
+}
+
+var lineAttr = {
+  vertex: [],
+  color: [0, 0, 0,
+          0, 0, 0]
 }
 
 var polygon = {
@@ -17,11 +25,25 @@ var polygonTemp = {
 
 function main() {  
   //Polygon
-  makeBufferAndProgram(polygon.vertex, polygon.color);
-  var countPoly = polygon.vertex.length/2
-  if(countPoly >= 3){
-    gl.drawArrays(gl.TRIANGLE_FAN, 0, countPoly)
-  }
+  //makeBufferAndProgram(polygon.vertex, polygon.color);
+  // var countPoly = polygon.vertex.length/2
+  // if(countPoly >= 3){
+  //   gl.drawArrays(gl.TRIANGLE_FAN, 0, countPoly)
+  // }
+}
+
+function handleLine() {
+  canvas.addEventListener('mousedown', (event) => {
+    eventClickLine(event)
+  })
+
+  canvas.addEventListener('mousemove', (event) =>{
+    eventMoveLine(event)
+  })
+
+  canvas.addEventListener('mouseup', (event) =>{
+    eventFinishLine(event)
+  })
 }
 
 
@@ -34,7 +56,6 @@ function handlePolygon(){
     eventMovePolygon(event)
   })
 } 
-
 
 function makeBufferAndProgram(vertexData, colorData){
   // Testing for Polygon
@@ -77,27 +98,82 @@ function makeBufferAndProgram(vertexData, colorData){
   gl.useProgram(program);
 }
 
-function handleLineButton() {
-  hoverLine = true
+function eventClickLine(e){
+  isDown = true
 
-  canvas.onmousedown = (e) => {
-    var clickX    = e.clientX;
-    var clickY   = e.clientY;
+  console.log("down")
+  var clickX = e.clientX
+  var clickY = e.clientY
+  var rect = e.target.getBoundingClientRect();
+
+  var x,y;
+
+  // normalize
+  x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+  y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
+
+  lineAttr.vertex.push([x, y])
+
+  console.log(x, y);
+  console.log(lineAttr)
+}
+
+function eventMoveLine(e){
+  if (isDown) {
+    console.log("move")
+
+    var clickX = e.clientX
+    var clickY = e.clientY
     var rect = e.target.getBoundingClientRect();
 
-    var x, y;
-    // get mouse position
+    var x, y
+    x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+    y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
+    // lineAttr.vertex[lineAttr.vertex.length-1][0] = x;
+    // lineAttr.vertex[lineAttr.vertex.length-1][1] = y;
+  } 
+}
+
+function eventFinishLine(e) {
+  isDown = false;
+  console.log("up");
+  var clickX = e.clientX
+  var clickY = e.clientY
+  var rect = e.target.getBoundingClientRect();
+
+  var x, y
+  x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+  y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
+  console.log(x, y)
+  lineAttr.vertex.push([x, y])
+  
+
+  makeBufferAndProgram(lineAttr.vertex, lineAttr.color)
+  console.log(lineAttr)
+  gl.drawArrays(gl.LINES, lineAttr.vertex[0], 2)
+  
+}
+  
+
+function eventMovePolygon(e){
+  var clickX = e.clientX
+    var clickY = e.clientY
+    var rect = e.target.getBoundingClientRect();
+
+    var x,y;
     x = (2*(clickX - rect.left) - canvas.width) / canvas.width;
     y = (canvas.height - 2*(clickY - rect.top)) / canvas.height;
-    console.log(x, y);
+    
+    if(polygonTemp.vertex.length >= 6){
+      polygonTemp.vertex[polygonTemp.vertex.length-2] = x
+      polygonTemp.vertex[polygonTemp.vertex.length-1] = y
+    }
 
-    // add vertices
-    lineVertexTemp.push(x);
-    lineVertexTemp.push(y);
-
-    makeBufferAndDraw(lineVertexTemp, lineColorTemp);
-    gl.drawArrays(gl.LINES, x, 2);
-  }
+    makeBufferAndProgram(polygonTemp.vertex, polygonTemp.color);
+    var count = polygonTemp.vertex.length/2
+    if(count >= 2){
+      gl.drawArrays(gl.TRIANGLE_FAN, 0, count)
+    }
 }
 
 function eventClickPolygon(e){
