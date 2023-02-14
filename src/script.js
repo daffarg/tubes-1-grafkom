@@ -1,9 +1,9 @@
 const vSource = `
-  attribute vec4 vPosition;
+  attribute vec2 vPosition;
   attribute vec4 vColor;
   varying vec4 fColor;
   void main(){
-    gl_Position = vPosition;
+    gl_Position = vec4(vPosition, 0.0, 1.0);
     fColor = vColor;
   }
 `;
@@ -26,13 +26,13 @@ let vertices = []
 let colors = []
 
 var polygon = {
-  vertex : [],
-  color : []
+  vertex: [],
+  color: []
 }
 
 var polygonTemp = {
-  vertex : [],
-  color : []
+  vertex: [],
+  color: []
 }
 
 //  Load shaders and initialize attribute buffers
@@ -48,74 +48,82 @@ isDown = false;
 render();
 
 function render() {
-    gl.clear(gl.COLOR_BUFFER_BIT);
+  // Clear canvas
+  gl.clearColor(0.8, 0.8, 0.8, 1.0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
 
-    for (let i = 0; i < shapes.length; i++) {
-      console.log(i)
-      for (let j = 0; j < shapes[i].vertices.length; j ++) {
-        vertices.push(shapes[i].vertices[j]);
-      }
+  // Kosongin array
+  let vertices = []
+  let colors = []
+
+  // Isi array
+  for (let i = 0; i < shapes.length; i++) {
+    console.log(i)
+    for (let j = 0; j < shapes[i].vertices.length; j++) {
+      vertices.push(shapes[i].vertices[j]);
     }
+  }
 
-    for (let i = 0; i < shapes.length; i++) {
-      for (let j = 0; j < shapes[i].color.length; j ++) {
-        colors.push(shapes[i].color[j]);
-      }
+  for (let i = 0; i < shapes.length; i++) {
+    for (let j = 0; j < shapes[i].color.length; j++) {
+      colors.push(shapes[i].color[j]);
     }
+  }
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
+  // Enggak tau
+  gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
 
-    const vPosition = gl.getAttribLocation(program, 'vPosition');
-    gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(vPosition);
+  const vPosition = gl.getAttribLocation(program, 'vPosition');
+  gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+  gl.enableVertexAttribArray(vPosition);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
+  gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
 
-    const vColor = gl.getAttribLocation(program, 'vColor');
-    gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(vColor);
+  const vColor = gl.getAttribLocation(program, 'vColor');
+  gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
+  gl.enableVertexAttribArray(vColor);
 
-    if (shapes.length > 0) {
-      console.log("shapes length", shapes.length)
-      for (let i = 0; i < shapes.length; i ++) {
-        for (let j = 0; j < vertices.length; j ++) {
-          if (shapes[i].category == "line") {
-            gl.drawArrays(gl.LINES, j*2, 2);
-          }
-        }
-      }
-    } 
-    
-    window.requestAnimFrame(render);
+  // Gambar tiap shape
+  console.log("shapes length", shapes.length);
+  for (let shapeIdx = 0; shapeIdx < shapes.length; shapeIdx++) {
+    switch (shapes[shapeIdx].category) {
+      case "line":
+        gl.drawArrays(gl.LINES, 2 * shapeIdx, 2);
+        break;
+      default:
+        break;
+    }
+  }
+
+  window.requestAnimFrame(render);
 }
-gl.clearColor(0.8, 0.8, 0.8, 1.0);
 
 function handleLine() {
   canvas.addEventListener('mousedown', (event) => {
     eventClickLine(event)
   })
 
-  canvas.addEventListener('mousemove', (event) =>{
+  canvas.addEventListener('mousemove', (event) => {
     eventMoveLine(event)
   })
 
-  canvas.addEventListener('mouseup', (event) =>{
+  canvas.addEventListener('mouseup', (event) => {
     eventFinishLine(event)
   })
 }
 
 
-function handlePolygon(){
+function handlePolygon() {
   canvas.addEventListener('mousedown', (event) => {
     eventClickPolygon(event)
   })
 
-  canvas.addEventListener('mousemove', (event) =>{
+  canvas.addEventListener('mousemove', (event) => {
     eventMovePolygon(event)
   })
-} 
+}
 
 // function makeBufferAndProgram(vertexData, colorData){
 //   // Testing for Polygon
@@ -156,10 +164,10 @@ function handlePolygon(){
 
 // }
 
-function eventClickLine(e){
+function eventClickLine(e) {
   console.log("down")
 
-  let x,y;
+  let x, y;
   // normalize
   x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
   y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
@@ -171,7 +179,7 @@ function eventClickLine(e){
 
   for (let i = 0; i < 2; i++) {
     lineVertices.push([x, y]);
-    lineColor.push([0,0,0,1]);
+    lineColor.push([0, 0, 0, 1]);
   }
 
   isDown = true
@@ -180,14 +188,14 @@ function eventClickLine(e){
   shapes.push(newLine);
 }
 
-function eventMoveLine(e){
+function eventMoveLine(e) {
   if (isDown) {
     // console.log("move")
 
     var x, y
     x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
     y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
-    for (let i = shapes.length - 1; i >= 0; i --) {
+    for (let i = shapes.length - 1; i >= 0; i--) {
       if (shapes[i].category == "line") {
         // console.log(i);
         shapes[i].vertices[0][0] = x;
@@ -195,73 +203,73 @@ function eventMoveLine(e){
         break;
       }
     }
-  } 
+  }
 }
 
 function eventFinishLine(e) {
   isDown = false;
   console.log("up");
 }
-  
 
-function eventMovePolygon(e){
-  var clickX = e.clientX
-    var clickY = e.clientY
-    var rect = e.target.getBoundingClientRect();
 
-    var x,y;
-    x = (2*(clickX - rect.left) - canvas.width) / canvas.width;
-    y = (canvas.height - 2*(clickY - rect.top)) / canvas.height;
-    
-    if(polygonTemp.vertex.length >= 6){
-      polygonTemp.vertex[polygonTemp.vertex.length-2] = x
-      polygonTemp.vertex[polygonTemp.vertex.length-1] = y
-    }
-
-    makeBufferAndProgram(polygonTemp.vertex, polygonTemp.color);
-    var count = polygonTemp.vertex.length/2
-    if(count >= 2){
-      gl.drawArrays(gl.TRIANGLE_FAN, 0, count)
-    }
-}
-
-function eventClickPolygon(e){
+function eventMovePolygon(e) {
   var clickX = e.clientX
   var clickY = e.clientY
   var rect = e.target.getBoundingClientRect();
 
-  var x,y;
-  x = (2*(clickX - rect.left) - canvas.width) / canvas.width;
-  y = (canvas.height - 2*(clickY - rect.top)) / canvas.height;
+  var x, y;
+  x = (2 * (clickX - rect.left) - canvas.width) / canvas.width;
+  y = (canvas.height - 2 * (clickY - rect.top)) / canvas.height;
+
+  if (polygonTemp.vertex.length >= 6) {
+    polygonTemp.vertex[polygonTemp.vertex.length - 2] = x
+    polygonTemp.vertex[polygonTemp.vertex.length - 1] = y
+  }
+
+  makeBufferAndProgram(polygonTemp.vertex, polygonTemp.color);
+  var count = polygonTemp.vertex.length / 2
+  if (count >= 2) {
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, count)
+  }
+}
+
+function eventClickPolygon(e) {
+  var clickX = e.clientX
+  var clickY = e.clientY
+  var rect = e.target.getBoundingClientRect();
+
+  var x, y;
+  x = (2 * (clickX - rect.left) - canvas.width) / canvas.width;
+  y = (canvas.height - 2 * (clickY - rect.top)) / canvas.height;
   polygonTemp.vertex.push(x)
   polygonTemp.vertex.push(y)
 
   makeBufferAndProgram(polygonTemp.vertex, polygonTemp.color)
-  var count = polygonTemp.vertex.length/2
-    if(count >= 3){
-      gl.drawArrays(gl.TRIANGLE_FAN, 0, count)
-    }
+  var count = polygonTemp.vertex.length / 2
+  if (count >= 3) {
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, count)
+  }
 }
 
-function eventMovePolygon(e){
+function eventMovePolygon(e) {
   var clickX = e.clientX
-    var clickY = e.clientY
-    var rect = e.target.getBoundingClientRect();
+  var clickY = e.clientY
+  var rect = e.target.getBoundingClientRect();
 
-    var x,y;
-    x = (2*(clickX - rect.left) - canvas.width) / canvas.width;
-    y = (canvas.height - 2*(clickY - rect.top)) / canvas.height;
-    
-    if(polygonTemp.vertex.length >= 6){
-      polygonTemp.vertex[polygonTemp.vertex.length-2] = x
-      polygonTemp.vertex[polygonTemp.vertex.length-1] = y
-    }
+  var x, y;
+  x = (2 * (clickX - rect.left) - canvas.width) / canvas.width;
+  y = (canvas.height - 2 * (clickY - rect.top)) / canvas.height;
 
-    makeBufferAndProgram(polygonTemp.vertex, polygonTemp.color);
-    var count = polygonTemp.vertex.length/2
-    if(count >= 2){
-      gl.drawArrays(gl.TRIANGLE_FAN, 0, count)
-    }
+  if (polygonTemp.vertex.length >= 6) {
+    polygonTemp.vertex[polygonTemp.vertex.length - 2] = x
+    polygonTemp.vertex[polygonTemp.vertex.length - 1] = y
+  }
+
+  makeBufferAndProgram(polygonTemp.vertex, polygonTemp.color);
+  var count = polygonTemp.vertex.length / 2
+  if (count >= 2) {
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, count)
+  }
 }
 
 function finalizePolygon() {
@@ -272,7 +280,7 @@ function finalizePolygon() {
 
   polygon.vertex.push(polygonTemp.vertex)
   polygon.color.push(polygonTemp.color)
-  
+
   polygonTemp.vertex = []
   polygonTemp.color = []
 
