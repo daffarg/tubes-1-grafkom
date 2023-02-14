@@ -42,6 +42,8 @@ gl.useProgram(program);
 // Associate out shader variables with our data buffer
 const vBuffer = gl.createBuffer();
 const cBuffer = gl.createBuffer();
+isDown = false;
+
 
 render();
 
@@ -49,6 +51,7 @@ function render() {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     for (let i = 0; i < shapes.length; i++) {
+      console.log(i)
       for (let j = 0; j < shapes[i].vertices.length; j ++) {
         vertices.push(shapes[i].vertices[j]);
       }
@@ -75,27 +78,19 @@ function render() {
     gl.enableVertexAttribArray(vColor);
 
     if (shapes.length > 0) {
+      console.log("shapes length", shapes.length)
       for (let i = 0; i < shapes.length; i ++) {
-        if (shapes[i].category == "line") {
-          gl.drawArrays(gl.LINES, 0, 2);
+        for (let j = 0; j < vertices.length; j ++) {
+          if (shapes[i].category == "line") {
+            gl.drawArrays(gl.LINES, j*2, 2);
+          }
         }
       }
     } 
     
     window.requestAnimFrame(render);
 }
-
-isDown = false;
-
 gl.clearColor(0.8, 0.8, 0.8, 1.0);
-// function main() {  
-//   //Polygon
-//   //makeBufferAndProgram(polygon.vertex, polygon.color);
-//   // var countPoly = polygon.vertex.length/2
-//   // if(countPoly >= 3){
-//   //   gl.drawArrays(gl.TRIANGLE_FAN, 0, countPoly)
-//   // }
-// }
 
 function handleLine() {
   canvas.addEventListener('mousedown', (event) => {
@@ -162,12 +157,9 @@ function handlePolygon(){
 // }
 
 function eventClickLine(e){
-  isDown = true
-
   console.log("down")
 
   let x,y;
-  let temp = [];
   // normalize
   x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
   y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
@@ -182,25 +174,22 @@ function eventClickLine(e){
     lineColor.push([0,0,0,1]);
   }
 
-  console.log(lineVertices)
+  isDown = true
 
   var newLine = new Line(lineVertices, lineColor);
   shapes.push(newLine);
-  console.log("shapes in on click")
-  console.log(shapes);
-
-  console.log(x, y);
 }
 
 function eventMoveLine(e){
   if (isDown) {
-    console.log("move")
+    // console.log("move")
 
     var x, y
     x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
     y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
     for (let i = shapes.length - 1; i >= 0; i --) {
       if (shapes[i].category == "line") {
+        // console.log(i);
         shapes[i].vertices[0][0] = x;
         shapes[i].vertices[0][1] = y;
         break;
@@ -212,11 +201,6 @@ function eventMoveLine(e){
 function eventFinishLine(e) {
   isDown = false;
   console.log("up");
-  console.log(shapes);
-  gl.drawArrays(gl.LINES, 0, 2);
-  console.log("all vertices");
-  console.log(vertices);
-  
 }
   
 
