@@ -47,7 +47,8 @@ gl.enableVertexAttribArray(vPosition);
 const vColor = gl.getAttribLocation(program, 'vColor');
 gl.enableVertexAttribArray(vColor);
 isDown = false;
-
+isMovePolyogn = false;
+currentEvent = "";
 
 render();
 
@@ -64,13 +65,21 @@ function render() {
   for (let i = 0; i < shapes.length; i++) {
     // console.log(i)
     for (let j = 0; j < shapes[i].vertices.length; j++) {
-      vertices.push(shapes[i].vertices[j]);
+      if(shapes[i].category == 'padding'){
+        continue
+      }else{
+        vertices.push(shapes[i].vertices[j]);
+      }
     }
   }
 
   for (let i = 0; i < shapes.length; i++) {
     for (let j = 0; j < shapes[i].color.length; j++) {
-      colors.push(shapes[i].color[j]);
+      if(shapes[i].category == 'padding'){
+        continue
+      }else{
+        colors.push(shapes[i].color[j]);
+      }
     }
   }
 
@@ -89,7 +98,7 @@ function render() {
   gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
 
   // Gambar tiap shape
-  console.log("shapes length", shapes.length);
+  // console.log("shapes length", shapes.length);
   // for (let shapeIdx = 0; shapeIdx < shapes.length; shapeIdx++) {
   //   let first = 0
   //   for (let shapeBefore = 0; shapeBefore < shapeIdx; shapeBefore++){
@@ -128,6 +137,7 @@ function render() {
 }
 
 function handleLine() {
+  currentEvent = 'line'
   canvas.addEventListener('mousedown', (event) => {
     eventClickLine(event)
   })
@@ -143,14 +153,14 @@ function handleLine() {
 
 
 function handlePolygon() {
-  console.log('sekarang polygon')
+  currentEvent = 'polygon'
   canvas.addEventListener('mousedown', (event) => {
     eventClickPolygon(event)
   })
 
-  // canvas.addEventListener('mousemove', (event) => {
-  //   eventMovePolygon(event)
-  // })
+  canvas.addEventListener('mousemove', (event) => {
+    eventMovePolygon(event)
+  })
 }
 
 // function makeBufferAndProgram(vertexData, colorData){
@@ -193,27 +203,29 @@ function handlePolygon() {
 // }
 
 function eventClickLine(e) {
-  console.log("down")
+  if(currentEvent === 'line'){
+    console.log("down")
 
-  let x, y;
-  // normalize
-  x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
-  y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
-  console.log("x", x);
-  console.log("y", y);
+    let x, y;
+    // normalize
+    x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+    y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
+    console.log("x", x);
+    console.log("y", y);
 
-  let lineVertices = [];
-  let lineColor = [];
+    let lineVertices = [];
+    let lineColor = [];
 
-  for (let i = 0; i < 2; i++) {
-    lineVertices.push([x, y]);
-    lineColor.push([0, 0, 0, 1]);
+    for (let i = 0; i < 2; i++) {
+      lineVertices.push([x, y]);
+      lineColor.push([0, 0, 0, 1]);
+    }
+
+    isDown = true
+
+    var newLine = new Line(lineVertices, lineColor);
+    shapes.push(newLine);
   }
-
-  isDown = true
-
-  var newLine = new Line(lineVertices, lineColor);
-  shapes.push(newLine);
 }
 
 function eventMoveLine(e) {
@@ -241,41 +253,48 @@ function eventFinishLine(e) {
 
 
 function eventMovePolygon(e) {
-  // var clickX = e.clientX
-  // var clickY = e.clientY
-  // var rect = e.target.getBoundingClientRect();
+  if(isMovePolyogn){
+    var x, y;
+    x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+    y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
 
-  // var x, y;
-  // x = (2 * (clickX - rect.left) - canvas.width) / canvas.width;
-  // y = (canvas.height - 2 * (clickY - rect.top)) / canvas.height;
-
-  // if (polygonTemp.vertex.length >= 6) {
-  //   polygonTemp.vertex[polygonTemp.vertex.length - 2] = x
-  //   polygonTemp.vertex[polygonTemp.vertex.length - 1] = y
-  // }
-}
-
-function eventClickPolygon(e) {
-  var clickX = e.clientX
-  var clickY = e.clientY
-  var rect = e.target.getBoundingClientRect();
-
-  var x, y;
-  x = (2 * (clickX - rect.left) - canvas.width) / canvas.width;
-  y = (canvas.height - 2 * (clickY - rect.top)) / canvas.height;
-
-  if(shapes.length == 0 || shapes[shapes.length-1].category != "polygon"){
-    var polygon = new Polygon([[x, y]], [[0,0,0,1]])
-    shapes.push(polygon)
-  }else{
-    shapes[shapes.length-1].vertices.push([x, y])
-    shapes[shapes.length-1].color.push([0,0,0,1])
+    if(shapes[shapes.length-1].category == "polygon"){
+      var countVertices = shapes[shapes.length-1].vertices.length
+      shapes[shapes.length-1].vertices[countVertices - 1][0] = x
+      shapes[shapes.length-1].vertices[countVertices - 1][1] = y
+    }
   }
 }
 
-// function finalizePolygon() {
-//   shapes[shapes.length-1].vertices.pop()
-//   shapes[shapes.length-1].color.pop()
-// }
+function eventClickPolygon(e) {
+  if(currentEvent === 'polygon'){
+    console.log('polygon click')
+    var x, y;
+    x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+    y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
+
+    if(shapes.length == 0 || shapes[shapes.length-1].category != "polygon"){
+      var polygon = new Polygon([[x, y]], [[0,0,0,1]])
+      shapes.push(polygon)
+    }else{
+      shapes[shapes.length-1].vertices.push([x, y])
+      shapes[shapes.length-1].color.push([0,0,0,1])
+      if(shapes[shapes.length-1].vertices.length == 2){
+        shapes[shapes.length-1].vertices.push([0, 0])
+        isMovePolyogn = true
+      }
+    }
+  }
+}
+
+function finalizePolygon() {
+  isMovePolyogn = false;
+  var padding = new Padding([[0,0]], [[0,0,0,1]]) //Membedakan antar 2 polygon yang berbeda
+  if(shapes[shapes.length - 1].category !== 'padding'){
+    shapes.push(padding)
+  }
+
+  console.log(shapes)
+}
 
 // window.onload = main();

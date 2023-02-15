@@ -17,3 +17,9 @@ class Polygon extends Shape{
         super(vertices, color, "polygon");
     }
 }
+
+class Padding extends Shape{
+    constructor(vertices, color){
+        super(vertices, color, "padding");
+    }
+}
