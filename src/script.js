@@ -25,15 +25,15 @@ let shapes = []
 let vertices = []
 let colors = []
 
-var polygon = {
-  vertex: [],
-  color: []
-}
+// var polygon = {
+//   vertex: [],
+//   color: []
+// }
 
-var polygonTemp = {
-  vertex: [],
-  color: []
-}
+// var polygonTemp = {
+//   vertex: [],
+//   color: []
+// }
 
 //  Load shaders and initialize attribute buffers
 const program = initShaders(gl, vSource, fSource);
@@ -58,7 +58,7 @@ function render() {
 
   // Isi array
   for (let i = 0; i < shapes.length; i++) {
-    console.log(i)
+    // console.log(i)
     for (let j = 0; j < shapes[i].vertices.length; j++) {
       vertices.push(shapes[i].vertices[j]);
     }
@@ -88,9 +88,17 @@ function render() {
   // Gambar tiap shape
   console.log("shapes length", shapes.length);
   for (let shapeIdx = 0; shapeIdx < shapes.length; shapeIdx++) {
+    let first = 0
+    for (let shapeBefore = 0; shapeBefore < shapeIdx; shapeBefore++){
+      first += shapes[shapeBefore].vertices.length
+    }
     switch (shapes[shapeIdx].category) {
       case "line":
-        gl.drawArrays(gl.LINES, 2 * shapeIdx, 2);
+        gl.drawArrays(gl.LINES, first, 2);
+        break;
+      case "polygon":
+        let count = shapes[shapeIdx].vertices.length
+        gl.drawArrays(gl.TRIANGLE_FAN, first, count);
         break;
       default:
         break;
@@ -116,13 +124,14 @@ function handleLine() {
 
 
 function handlePolygon() {
+  console.log('sekarang polygon')
   canvas.addEventListener('mousedown', (event) => {
     eventClickPolygon(event)
   })
 
-  canvas.addEventListener('mousemove', (event) => {
-    eventMovePolygon(event)
-  })
+  // canvas.addEventListener('mousemove', (event) => {
+  //   eventMovePolygon(event)
+  // })
 }
 
 // function makeBufferAndProgram(vertexData, colorData){
@@ -213,24 +222,18 @@ function eventFinishLine(e) {
 
 
 function eventMovePolygon(e) {
-  var clickX = e.clientX
-  var clickY = e.clientY
-  var rect = e.target.getBoundingClientRect();
+  // var clickX = e.clientX
+  // var clickY = e.clientY
+  // var rect = e.target.getBoundingClientRect();
 
-  var x, y;
-  x = (2 * (clickX - rect.left) - canvas.width) / canvas.width;
-  y = (canvas.height - 2 * (clickY - rect.top)) / canvas.height;
+  // var x, y;
+  // x = (2 * (clickX - rect.left) - canvas.width) / canvas.width;
+  // y = (canvas.height - 2 * (clickY - rect.top)) / canvas.height;
 
-  if (polygonTemp.vertex.length >= 6) {
-    polygonTemp.vertex[polygonTemp.vertex.length - 2] = x
-    polygonTemp.vertex[polygonTemp.vertex.length - 1] = y
-  }
-
-  makeBufferAndProgram(polygonTemp.vertex, polygonTemp.color);
-  var count = polygonTemp.vertex.length / 2
-  if (count >= 2) {
-    gl.drawArrays(gl.TRIANGLE_FAN, 0, count)
-  }
+  // if (polygonTemp.vertex.length >= 6) {
+  //   polygonTemp.vertex[polygonTemp.vertex.length - 2] = x
+  //   polygonTemp.vertex[polygonTemp.vertex.length - 1] = y
+  // }
 }
 
 function eventClickPolygon(e) {
@@ -241,51 +244,19 @@ function eventClickPolygon(e) {
   var x, y;
   x = (2 * (clickX - rect.left) - canvas.width) / canvas.width;
   y = (canvas.height - 2 * (clickY - rect.top)) / canvas.height;
-  polygonTemp.vertex.push(x)
-  polygonTemp.vertex.push(y)
 
-  makeBufferAndProgram(polygonTemp.vertex, polygonTemp.color)
-  var count = polygonTemp.vertex.length / 2
-  if (count >= 3) {
-    gl.drawArrays(gl.TRIANGLE_FAN, 0, count)
+  if(shapes.length == 0 || shapes[shapes.length-1].category != "polygon"){
+    var polygon = new Polygon([[x, y]], [[0,0,0,1]])
+    shapes.push(polygon)
+  }else{
+    shapes[shapes.length-1].vertices.push([x, y])
+    shapes[shapes.length-1].color.push([0,0,0,1])
   }
 }
 
-function eventMovePolygon(e) {
-  var clickX = e.clientX
-  var clickY = e.clientY
-  var rect = e.target.getBoundingClientRect();
-
-  var x, y;
-  x = (2 * (clickX - rect.left) - canvas.width) / canvas.width;
-  y = (canvas.height - 2 * (clickY - rect.top)) / canvas.height;
-
-  if (polygonTemp.vertex.length >= 6) {
-    polygonTemp.vertex[polygonTemp.vertex.length - 2] = x
-    polygonTemp.vertex[polygonTemp.vertex.length - 1] = y
-  }
-
-  makeBufferAndProgram(polygonTemp.vertex, polygonTemp.color);
-  var count = polygonTemp.vertex.length / 2
-  if (count >= 2) {
-    gl.drawArrays(gl.TRIANGLE_FAN, 0, count)
-  }
-}
-
-function finalizePolygon() {
-  console.log('ini sebelum', polygonTemp.vertex)
-  polygonTemp.vertex.pop()
-  polygonTemp.vertex.pop()
-  console.log('ini sesudah', polygonTemp.vertex)
-
-  polygon.vertex.push(polygonTemp.vertex)
-  polygon.color.push(polygonTemp.color)
-
-  polygonTemp.vertex = []
-  polygonTemp.color = []
-
-  polygon.vertex.pop()
-  polygon.vertex.pop()
-}
+// function finalizePolygon() {
+//   shapes[shapes.length-1].vertices.pop()
+//   shapes[shapes.length-1].color.pop()
+// }
 
 // window.onload = main();

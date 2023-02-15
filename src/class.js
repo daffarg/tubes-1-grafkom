@@ -11,3 +11,9 @@ class Line extends Shape {
         super(vertices, color, "line");
     }
 }
+
+class Polygon extends Shape{
+    constructor(vertices, color){
+        super(vertices, color, "polygon");
+    }
+}
