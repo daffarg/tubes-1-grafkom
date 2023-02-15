@@ -26,3 +26,11 @@ canvas {
 button {
     margin: 0px 1px;
 }
+
+.button-on {
+    background-color: #ccc;
+}
+
+.button-off {
+    background-color: #2196F3;
+}

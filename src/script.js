@@ -49,6 +49,7 @@ gl.enableVertexAttribArray(vColor);
 isDown = false;
 isMovePolyogn = false;
 currentEvent = "";
+let currentShape;
 
 render();
 
@@ -65,9 +66,9 @@ function render() {
   for (let i = 0; i < shapes.length; i++) {
     // console.log(i)
     for (let j = 0; j < shapes[i].vertices.length; j++) {
-      if(shapes[i].category == 'padding'){
+      if (shapes[i].category == 'padding') {
         continue
-      }else{
+      } else {
         vertices.push(shapes[i].vertices[j]);
       }
     }
@@ -75,9 +76,9 @@ function render() {
 
   for (let i = 0; i < shapes.length; i++) {
     for (let j = 0; j < shapes[i].color.length; j++) {
-      if(shapes[i].category == 'padding'){
+      if (shapes[i].category == 'padding') {
         continue
-      }else{
+      } else {
         colors.push(shapes[i].color[j]);
       }
     }
@@ -117,18 +118,18 @@ function render() {
   //   }
   // }
   let vIdx = 0;
-  shapes.forEach( shape  => {
+  shapes.forEach(shape => {
+    let count = shape.vertices.length;
     switch (shape.category) {
       case "line":
-        gl.drawArrays(gl.LINES, vIdx, 2);
-        vIdx += 2;
-        break;
+        gl.drawArrays(gl.LINES, vIdx, count);
       case "polygon":
-        let count = shape.vertices.length
+        console.log("Polygon count", count);
         gl.drawArrays(gl.TRIANGLE_FAN, vIdx, count);
-        vIdx += count;
-        break;
+      case "rectangle":
+        gl.drawArrays(gl.TRIANGLE_FAN, vIdx, count);
       default:
+        vIdx += count;
         break;
     }
   })
@@ -161,6 +162,18 @@ function handlePolygon() {
   canvas.addEventListener('mousemove', (event) => {
     eventMovePolygon(event)
   })
+}
+
+canvas.addEventListener("click", event => {
+  eventClickRectangle(event);
+})
+canvas.addEventListener("mousemove", event => {
+  eventMoveRectangle(event);
+})
+
+function handleRectangle() {
+  currentEvent = "RECT_MODE";
+  console.log(currentEvent);
 }
 
 // function makeBufferAndProgram(vertexData, colorData){
@@ -203,7 +216,7 @@ function handlePolygon() {
 // }
 
 function eventClickLine(e) {
-  if(currentEvent === 'line'){
+  if (currentEvent === 'line') {
     console.log("down")
 
     let x, y;
@@ -253,34 +266,35 @@ function eventFinishLine(e) {
 
 
 function eventMovePolygon(e) {
-  if(isMovePolyogn){
+  if (isMovePolyogn) {
     var x, y;
     x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
     y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
 
-    if(shapes[shapes.length-1].category == "polygon"){
-      var countVertices = shapes[shapes.length-1].vertices.length
-      shapes[shapes.length-1].vertices[countVertices - 1][0] = x
-      shapes[shapes.length-1].vertices[countVertices - 1][1] = y
+    if (shapes[shapes.length - 1].category == "polygon") {
+      var countVertices = shapes[shapes.length - 1].vertices.length
+      shapes[shapes.length - 1].vertices[countVertices - 1][0] = x
+      shapes[shapes.length - 1].vertices[countVertices - 1][1] = y
     }
   }
 }
 
 function eventClickPolygon(e) {
-  if(currentEvent === 'polygon'){
+  if (currentEvent === 'polygon') {
     console.log('polygon click')
     var x, y;
     x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
     y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
 
-    if(shapes.length == 0 || shapes[shapes.length-1].category != "polygon"){
-      var polygon = new Polygon([[x, y]], [[0,0,0,1]])
+    if (shapes.length == 0 || shapes[shapes.length - 1].category != "polygon") {
+      var polygon = new Polygon([[x, y]], [[0, 0, 0, 1]])
       shapes.push(polygon)
-    }else{
-      shapes[shapes.length-1].vertices.push([x, y])
-      shapes[shapes.length-1].color.push([0,0,0,1])
-      if(shapes[shapes.length-1].vertices.length == 2){
-        shapes[shapes.length-1].vertices.push([0, 0])
+    } else {
+      shapes[shapes.length - 1].vertices.push([x, y])
+      shapes[shapes.length - 1].color.push([0, 0, 0, 1])
+      if (shapes[shapes.length - 1].vertices.length == 2) {
+        shapes[shapes.length - 1].vertices.push([0, 0])
+        shapes[shapes.length - 1].color.push([0, 0, 0, 1]) // Dikasih warna
         isMovePolyogn = true
       }
     }
@@ -289,8 +303,8 @@ function eventClickPolygon(e) {
 
 function finalizePolygon() {
   isMovePolyogn = false;
-  var padding = new Padding([[0,0]], [[0,0,0,1]]) //Membedakan antar 2 polygon yang berbeda
-  if(shapes[shapes.length - 1].category !== 'padding'){
+  var padding = new Padding([[0, 0]], [[0, 0, 0, 1]]) //Membedakan antar 2 polygon yang berbeda
+  if (shapes[shapes.length - 1].category !== 'padding') {
     shapes.push(padding)
   }
 
@@ -298,3 +312,51 @@ function finalizePolygon() {
 }
 
 // window.onload = main();
+
+function eventClickRectangle(e) {
+  let x, y;
+  x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+  y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
+
+  console.log("Click Rect");
+  if (currentEvent === "RECT_MODE") { // Baru klik tombol, belum ngebambar
+    console.log("Rect Mode");
+    currentShape = new Rectangle([], []);
+
+    for (let i = 0; i < 6; i++) {
+      currentShape.vertices.push([x, y]);
+      currentShape.color.push([0, 0, 0, 1]);
+    }
+
+    shapes.push(currentShape);
+
+
+    currentEvent = "RECT_DRAW";
+
+  } else if (currentEvent === "RECT_DRAW") { // Lagi ngegambar
+    console.log("Rect Draw");
+    currentEvent = "";
+    currentShape = null;
+  }
+}
+
+function eventMoveRectangle(e) {
+  if (currentEvent === "RECT_DRAW") {
+
+    let oldX, oldY;
+    [oldX, oldY] = currentShape.vertices[0];
+
+    let newX, newY;
+    newX = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+    newY = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
+
+    currentShape.vertices = [
+      [oldX, oldY],
+      [newX, oldY],
+      [oldX, newY],
+      [newX, oldY],
+      [newX, newY],
+      [oldX, newY]
+    ]
+  }
+}

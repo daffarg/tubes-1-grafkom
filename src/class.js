@@ -23,3 +23,9 @@ class Padding extends Shape{
         super(vertices, color, "padding");
     }
 }
+
+class Rectangle extends Shape {
+    constructor(vertices, color){
+        super(vertices, color, "rectangle");
+    }
+}
