@@ -42,6 +42,10 @@ gl.useProgram(program);
 // Associate out shader variables with our data buffer
 const vBuffer = gl.createBuffer();
 const cBuffer = gl.createBuffer();
+const vPosition = gl.getAttribLocation(program, 'vPosition');
+gl.enableVertexAttribArray(vPosition);
+const vColor = gl.getAttribLocation(program, 'vColor');
+gl.enableVertexAttribArray(vColor);
 isDown = false;
 
 
@@ -70,40 +74,55 @@ function render() {
     }
   }
 
-  // Enggak tau
+  // Isi buffer vBuffer
   gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
 
-  const vPosition = gl.getAttribLocation(program, 'vPosition');
+  // Konfigurasi cara isi atribut vPosition
   gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
-  gl.enableVertexAttribArray(vPosition);
 
+  // Isi buffer cBuffer
   gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
 
-  const vColor = gl.getAttribLocation(program, 'vColor');
+  // Konfigurasi cara isi atribut cPosition
   gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
-  gl.enableVertexAttribArray(vColor);
 
   // Gambar tiap shape
   console.log("shapes length", shapes.length);
-  for (let shapeIdx = 0; shapeIdx < shapes.length; shapeIdx++) {
-    let first = 0
-    for (let shapeBefore = 0; shapeBefore < shapeIdx; shapeBefore++){
-      first += shapes[shapeBefore].vertices.length
-    }
-    switch (shapes[shapeIdx].category) {
+  // for (let shapeIdx = 0; shapeIdx < shapes.length; shapeIdx++) {
+  //   let first = 0
+  //   for (let shapeBefore = 0; shapeBefore < shapeIdx; shapeBefore++){
+  //     first += shapes[shapeBefore].vertices.length
+  //   }
+  //   switch (shapes[shapeIdx].category) {
+  //     case "line":
+  //       gl.drawArrays(gl.LINES, first, 2);
+  //       break;
+  //     case "polygon":
+  //       let count = shapes[shapeIdx].vertices.length
+  //       gl.drawArrays(gl.TRIANGLE_FAN, first, count);
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // }
+  let vIdx = 0;
+  shapes.forEach( shape  => {
+    switch (shape.category) {
       case "line":
-        gl.drawArrays(gl.LINES, first, 2);
+        gl.drawArrays(gl.LINES, vIdx, 2);
+        vIdx += 2;
         break;
       case "polygon":
-        let count = shapes[shapeIdx].vertices.length
-        gl.drawArrays(gl.TRIANGLE_FAN, first, count);
+        let count = shape.vertices.length
+        gl.drawArrays(gl.TRIANGLE_FAN, vIdx, count);
+        vIdx += count;
         break;
       default:
         break;
     }
-  }
+  })
 
   window.requestAnimFrame(render);
 }
