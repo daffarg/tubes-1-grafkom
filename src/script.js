@@ -327,8 +327,8 @@ function eventMoveSquare(e) {
           side = dy
         }
 
-        shapes[i].vertices[2][0] = x
-        shapes[i].vertices[2][1] = y
+        shapes[i].vertices[2][0] = shapes[i].vertices[0][0] + side
+        shapes[i].vertices[2][1] = shapes[i].vertices[0][1] + side
         shapes[i].vertices[3][1] = shapes[i].vertices[0][1] + side
         shapes[i].vertices[1][0] = shapes[i].vertices[0][0] + side
         break;
