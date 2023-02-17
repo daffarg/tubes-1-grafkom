@@ -320,17 +320,24 @@ function eventMoveSquare(e) {
         let dx = x - shapes[i].vertices[0][0]
         let dy = y - shapes[i].vertices[0][1]
 
-        let side = 0
-        if (Math.abs(dx) <= Math.abs(dy)) {
-          side = dx
+        let side = Math.min(Math.abs(dx), Math.abs(dy))
+        
+        if (dy > 0) {
+          dy = side
         } else {
-          side = dy
+          dy = -side
         }
 
-        shapes[i].vertices[2][0] = shapes[i].vertices[0][0] + side
-        shapes[i].vertices[2][1] = shapes[i].vertices[0][1] + side
-        shapes[i].vertices[3][1] = shapes[i].vertices[0][1] + side
-        shapes[i].vertices[1][0] = shapes[i].vertices[0][0] + side
+        if (dx > 0) {
+          dx = side
+        } else {
+          dx = -side
+        }
+
+        shapes[i].vertices[2][0] = shapes[i].vertices[0][0] + dx
+        shapes[i].vertices[2][1] = shapes[i].vertices[0][1] + dy
+        shapes[i].vertices[3][1] = shapes[i].vertices[0][1] + dy
+        shapes[i].vertices[1][0] = shapes[i].vertices[0][0] + dx
         break;
       }
     }
