@@ -123,6 +123,8 @@ function render() {
     switch (shape.category) {
       case "line":
         gl.drawArrays(gl.LINES, vIdx, count);
+      case "square":
+        gl.drawArrays(gl.TRIANGLE_FAN, vIdx, count);
       case "polygon":
         console.log("Polygon count", count);
         gl.drawArrays(gl.TRIANGLE_FAN, vIdx, count);
@@ -149,6 +151,21 @@ function handleLine() {
 
   canvas.addEventListener('mouseup', (event) => {
     eventFinishLine(event)
+  })
+}
+
+function handleSquare() {
+  currentEvent = 'square'
+  canvas.addEventListener('mousedown', (event) => {
+    eventClickSquare(event)
+  })
+
+  canvas.addEventListener('mousemove', (event) => {
+    eventMoveSquare(event)
+  })
+
+  canvas.addEventListener('mouseup', (event) => {
+    eventFinishSquare(event)
   })
 }
 
@@ -260,6 +277,68 @@ function eventMoveLine(e) {
 }
 
 function eventFinishLine(e) {
+  isDown = false;
+  console.log("up");
+}
+
+function eventClickSquare(e) {
+  if(currentEvent === 'square'){
+    console.log("down")
+
+    let x, y;
+    // normalize
+    x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+    y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
+    console.log("x", x);
+    console.log("y", y);
+
+    let squareVertices = [];
+    let squareColor = [];
+
+    for (let i = 0; i < 4; i++) {
+      squareVertices.push([x, y]);
+      squareColor.push(
+        [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1]);
+    }
+
+    isDown = true
+
+    var newSquare = new Square(squareVertices, squareColor);
+    shapes.push(newSquare);
+  }
+}
+
+function eventMoveSquare(e) {
+  if (isDown) {
+    // console.log("move")
+
+    var x, y
+    x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+    y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
+    for (let i = shapes.length - 1; i >= 0; i--) {
+      if (shapes[i].category == "square") {
+        // console.log(i);
+        let dx = x - shapes[i].vertices[0][0]
+        let dy = y - shapes[i].vertices[0][1]
+
+        let side = 0
+        if (Math.abs(dx) <= Math.abs(dy)) {
+          side = dx
+        } else {
+          side = dy
+        }
+
+        shapes[i].vertices[2][0] = x
+        shapes[i].vertices[2][1] = y
+        shapes[i].vertices[3][1] = shapes[i].vertices[0][1] + side
+        shapes[i].vertices[1][0] = shapes[i].vertices[0][0] + side
+        break;
+      }
+    }
+  }
+}
+
+function eventFinishSquare(e) {
   isDown = false;
   console.log("up");
 }

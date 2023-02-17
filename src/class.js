@@ -12,6 +12,12 @@ class Line extends Shape {
     }
 }
 
+class Square extends Shape {
+    constructor(vertices, color) {
+        super(vertices, color, "square");
+    }
+}
+
 class Polygon extends Shape{
     constructor(vertices, color){
         super(vertices, color, "polygon");
