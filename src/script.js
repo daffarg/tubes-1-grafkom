@@ -201,7 +201,7 @@ function handleRectangle() {
 
 function handleSelect() {
   currentEvent = 'move'
-  canvas.addEventListener("click", (event) => {
+  canvas.addEventListener("mousedown", (event) => {
     eventClickSelect(event);
   })
   canvas.addEventListener("mousemove", (event) => {
@@ -443,6 +443,7 @@ function eventClickSelect(e) {
       selectShapeIdx = -1 // kosongkan index shape
       selectLineVertexIdx = -1
     } else {
+      isDownMove = true
       let x, y;
       // normalize
       x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
@@ -455,19 +456,19 @@ function eventClickSelect(e) {
           console.log("firstVertex", firstVertex)
           secondVertex = euclideanDistance(shapes[i].vertices[1], [x, y])
           console.log("secondVertex", secondVertex)
-          if (firstVertex <= selectRadius) {
+          if (firstVertex < selectRadius) {
             selectLineVertexIdx = 0
-          } else if (secondVertex <= selectRadius) {
+          } else if (secondVertex < selectRadius) {
             selectLineVertexIdx = 1
           }
           if (selectLineVertexIdx != -1) { // apakah dalam radius 
             console.log("tes")
             selectShapeCategory = "line"
             selectShapeIdx = i
+            break
           }
         }
       }
-      isDownMove = true
     }
   }
 }
