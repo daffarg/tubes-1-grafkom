@@ -25,6 +25,12 @@ let shapes = []
 let vertices = []
 let colors = []
 
+const selectRadius = 0.05
+let selectShapeCategory = ""
+let selectShapeIdx = -1
+let selectLineVertexIdx = -1
+
+
 // var polygon = {
 //   vertex: [],
 //   color: []
@@ -49,6 +55,7 @@ gl.enableVertexAttribArray(vColor);
 isDownLine = false;
 isDownSquare = false;
 isMovePolyogn = false;
+isDownMove = false;
 currentEvent = "";
 let currentShape;
 
@@ -60,8 +67,8 @@ function render() {
   gl.clear(gl.COLOR_BUFFER_BIT);
 
   // Kosongin array
-  let vertices = []
-  let colors = []
+  // let vertices = []
+  // let colors = []
 
   // Isi array
   for (let i = 0; i < shapes.length; i++) {
@@ -192,9 +199,21 @@ function handleRectangle() {
   console.log(currentEvent);
 }
 
+function handleSelect() {
+  currentEvent = 'move'
+  canvas.addEventListener("click", (event) => {
+    eventClickSelect(event);
+  })
+  canvas.addEventListener("mousemove", (event) => {
+    eventMoveSelect(event);
+  })
+  canvas.addEventListener("mouseup", (event) => {
+    eventFinishSelect(event);
+  })
+}
+
 function eventClickLine(e) {
   if (currentEvent === 'line') {
-    console.log(vertices)
     console.log("down")
 
     let x, y;
@@ -415,4 +434,59 @@ function eventMoveRectangle(e) {
       [oldX, newY]
     ]
   }
+}
+
+function eventClickSelect(e) {
+  if (currentEvent === "move") {
+    if (selectShapeCategory !== "") {
+      selectShapeCategory = "" // kosongkan kategori shape
+      selectShapeIdx = -1 // kosongkan index shape
+      selectLineVertexIdx = -1
+    } else {
+      let x, y;
+      // normalize
+      x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+      y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
+
+      for (let i = 0; i < shapes.length; i++) {
+        if (shapes[i].category === "line") {
+          console.log(shapes[i].vertices)
+          firstVertex = euclideanDistance(shapes[i].vertices[0], [x, y])
+          console.log("firstVertex", firstVertex)
+          secondVertex = euclideanDistance(shapes[i].vertices[1], [x, y])
+          console.log("secondVertex", secondVertex)
+          if (firstVertex <= selectRadius) {
+            selectLineVertexIdx = 0
+          } else if (secondVertex <= selectRadius) {
+            selectLineVertexIdx = 1
+          }
+          if (selectLineVertexIdx != -1) { // apakah dalam radius 
+            console.log("tes")
+            selectShapeCategory = "line"
+            selectShapeIdx = i
+          }
+        }
+      }
+      isDownMove = true
+    }
+  }
+}
+
+function eventMoveSelect(e) {
+  if (isDownMove) {
+    let x, y;
+    // normalize
+    x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+    y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
+
+    if (selectShapeCategory === "line") {
+      shapes[selectShapeIdx].vertices[selectLineVertexIdx][0] = x
+      shapes[selectShapeIdx].vertices[selectLineVertexIdx][1] = y
+    }
+  }
+}
+
+function eventFinishSelect(e) {
+  isDownMove = false
+  console.log("up")
 }
