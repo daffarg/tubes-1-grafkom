@@ -46,7 +46,8 @@ const vPosition = gl.getAttribLocation(program, 'vPosition');
 gl.enableVertexAttribArray(vPosition);
 const vColor = gl.getAttribLocation(program, 'vColor');
 gl.enableVertexAttribArray(vColor);
-isDown = false;
+isDownLine = false;
+isDownSquare = false;
 isMovePolyogn = false;
 currentEvent = "";
 let currentShape;
@@ -130,9 +131,8 @@ function render() {
       case "rectangle":
         gl.drawArrays(gl.TRIANGLE_FAN, vIdx, count);
       default:
-        break;
+        vIdx += count;
     }
-    vIdx += count;
   })
 
   window.requestAnimFrame(render);
@@ -192,47 +192,9 @@ function handleRectangle() {
   console.log(currentEvent);
 }
 
-// function makeBufferAndProgram(vertexData, colorData){
-//   // Testing for Polygon
-//   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
-//   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexData), gl.STATIC_DRAW)
-
-//   const colorBuffer = gl.createBuffer()
-//   gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer)
-//   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colorData), gl.STATIC_DRAW)
-
-//   //Vertex Shader
-//   const vtx = document.getElementById('vertex-shader-2d').text
-//   const vertexShader = gl.createShader(gl.VERTEX_SHADER)
-//   gl.shaderSource(vertexShader,vtx)
-//   gl.compileShader(vertexShader);
-
-//   //Fragment Shader
-//   const ftx = document.getElementById('fragment-shader-2d').text
-//   const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER)
-//   gl.shaderSource(fragmentShader, ftx)
-//   gl.compileShader(fragmentShader)
-
-//   //Program
-//   const program = gl.createProgram();
-//   gl.attachShader(program, vertexShader)
-//   gl.attachShader(program, fragmentShader);
-//   gl.linkProgram(program);
-
-//   const positionLocation = gl.getAttribLocation(program, `a_position`);
-//   gl.enableVertexAttribArray(positionLocation);
-//   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-//   gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0,0);
-
-//   const colorLocation = gl.getAttribLocation(program, `a_color`);
-//   gl.enableVertexAttribArray(colorLocation);
-//   gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-//   gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 0, 0);
-
-// }
-
 function eventClickLine(e) {
   if (currentEvent === 'line') {
+    console.log(vertices)
     console.log("down")
 
     let x, y;
@@ -250,7 +212,7 @@ function eventClickLine(e) {
       lineColor.push([0, 0, 0, 1]);
     }
 
-    isDown = true
+    isDownLine = true
 
     var newLine = new Line(lineVertices, lineColor);
     shapes.push(newLine);
@@ -258,7 +220,7 @@ function eventClickLine(e) {
 }
 
 function eventMoveLine(e) {
-  if (isDown) {
+  if (isDownLine) {
     // console.log("move")
 
     var x, y
@@ -276,7 +238,7 @@ function eventMoveLine(e) {
 }
 
 function eventFinishLine(e) {
-  isDown = false;
+  isDownLine = false;
   console.log("up");
 }
 
@@ -300,7 +262,7 @@ function eventClickSquare(e) {
         [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1]);
     }
 
-    isDown = true
+    isDownSquare = true
 
     var newSquare = new Square(squareVertices, squareColor);
     shapes.push(newSquare);
@@ -308,7 +270,7 @@ function eventClickSquare(e) {
 }
 
 function eventMoveSquare(e) {
-  if (isDown) {
+  if (isDownSquare) {
     // console.log("move")
 
     var x, y
@@ -345,7 +307,7 @@ function eventMoveSquare(e) {
 }
 
 function eventFinishSquare(e) {
-  isDown = false;
+  isDownSquare = false;
   console.log("up");
 }
 
