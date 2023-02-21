@@ -30,6 +30,7 @@ let selectShapeCategory = ""
 let selectShapeIdx = -1
 let selectLineVertexIdx = -1
 
+let currentEventText = document.getElementById("current-action-text")
 
 // var polygon = {
 //   vertex: [],
@@ -67,8 +68,8 @@ function render() {
   gl.clear(gl.COLOR_BUFFER_BIT);
 
   // Kosongin array
-  // let vertices = []
-  // let colors = []
+  let vertices = []
+  let colors = []
 
   // Isi array
   for (let i = 0; i < shapes.length; i++) {
@@ -147,6 +148,7 @@ function render() {
 
 function handleLine() {
   currentEvent = 'line'
+  currentEventText.innerHTML = "Current Event: Line"
   canvas.addEventListener('mousedown', (event) => {
     eventClickLine(event)
   })
@@ -162,6 +164,7 @@ function handleLine() {
 
 function handleSquare() {
   currentEvent = 'square'
+  currentEventText.innerHTML = "Current Event: Square"
   canvas.addEventListener('mousedown', (event) => {
     eventClickSquare(event)
   })
@@ -178,6 +181,7 @@ function handleSquare() {
 
 function handlePolygon() {
   currentEvent = 'polygon'
+  currentEventText.innerHTML = "Current Event: Polygon"
   canvas.addEventListener('mousedown', (event) => {
     eventClickPolygon(event)
   })
@@ -195,12 +199,14 @@ canvas.addEventListener("mousemove", event => {
 })
 
 function handleRectangle() {
+  currentEventText.innerHTML = "Current Event: Rectangle"
   currentEvent = "RECT_MODE";
   console.log(currentEvent);
 }
 
 function handleSelect() {
   currentEvent = 'move'
+  currentEventText.innerHTML = "Current Event: Select Vertex"
   canvas.addEventListener("mousedown", (event) => {
     eventClickSelect(event);
   })
