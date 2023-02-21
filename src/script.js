@@ -382,11 +382,12 @@ function eventClickPolygon(e) {
 }
 
 function finalizePolygon() {
-  console.log('finish')
-  isMovePolyogn = false;
-  if(shapes[shapes.length - 1].category === 'polygon'){
-    shapes[shapes.length - 1].isFinish = true
-    shapes[shapes.length - 1].vertices.pop()
+  if(currentEvent === "polygon"){
+    isMovePolyogn = false;
+    if(shapes[shapes.length - 1].category === 'polygon'){
+      shapes[shapes.length - 1].isFinish = true
+      shapes[shapes.length - 1].vertices.pop()
+    }
   }
 }
 
