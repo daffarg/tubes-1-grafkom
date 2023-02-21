@@ -1,21 +1,37 @@
 <!DOCTYPE html>
+
 <head>
     <title>Tugas Besar 1 IF3260 Grafika Komputer</title>
     <link rel="stylesheet" href="style.css">
     <script type="text/javascript" src="./utility.js"></script>
     <script type="text/javascript" src="./class.js"></script>
 </head>
+
 <body>
     <h1>Tugas Besar 1 IF3260 Grafika Komputer</h1>
-    <canvas id="canvas" width="500vw" height="500vh"></canvas>
-    <div class="button-group">
-        <button>Help</button>
-        <button onclick="handleLine()">Line</button>
-        <button onclick="handleSquare()">Square</button>
-        <button onclick="handleRectangle()">Rectangle</button>
-        <button onclick="handlePolygon()">Polygon</button>
-        <button onclick="finalizePolygon()">Finish Polygon</button>
-        <button onclick="handleSelect()">Select</button>
+    <div class="canvas-group">
+        <canvas id="canvas" width="500vw" height="500vh"></canvas>
+        <div class="canvas-menu">
+            <div class="button-group">
+                <button>Help</button>
+                <button onclick="handleLine()">Line</button>
+                <button onclick="handleSquare()">Square</button>
+                <button onclick="handleRectangle()">Rectangle</button>
+                <button onclick="handlePolygon()">Polygon</button>
+                <button onclick="finalizePolygon()">Finish Polygon</button>
+                <button onclick="handleSelect()">Select Vertex</button>
+                <input type="color" value="#ff0000"> 
+            </div>
+            <h2> Current Action: <b class="current-action">None</b></h2>
+            <div class="transform-translate">
+                <h3>Translate</h3>
+                <input type="range" min="1" max="500" class="transform-slider" id="transform-translate">
+            </div>
+            <div class="transform-rotate">
+                <h3>Rotate</h3>
+                <input type="range" min="1" max="500" class="transform-slider" id="transform-rotate" disabled>
+            </div>
+        </div>
     </div>
     <script src="./script.js"></script>
 </body>

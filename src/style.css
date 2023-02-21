@@ -14,17 +14,25 @@ canvas {
     border: black solid;
     background-color: rgb(240, 248, 255);
     display: block;
-    margin: 0 auto;
+    margin: 0% 5%;
+    /* margin: 0 auto; */
 }
 
-.button-group {
+.canvas-group {
     display: flex;
-    justify-content: center;
-    align-content: center;
+    justify-content: space-evenly;
 }
 
-button {
-    margin: 0px 1px;
+.canvas-menu {
+    width: 30%;
+}
+.button-group {
+    display: grid;
+    /* grid-auto-flow: column; */
+    grid-template-columns: 2fr 2fr 2fr 2fr;
+    grid-template-rows: 1fr 1fr;
+    /* justify-content: center;
+    align-content: center; */
 }
 
 .button-on {
@@ -33,4 +41,12 @@ button {
 
 .button-off {
     background-color: #2196F3;
+}
+
+.transform-slider {
+    width: 100%;
+}
+
+input[type="color"] {
+    width: 100%;
 }
