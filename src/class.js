@@ -21,12 +21,7 @@ class Square extends Shape {
 class Polygon extends Shape{
     constructor(vertices, color){
         super(vertices, color, "polygon");
-    }
-}
-
-class Padding extends Shape{
-    constructor(vertices, color){
-        super(vertices, color, "padding");
+        this.isFinish = false
     }
 }
 

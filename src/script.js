@@ -359,22 +359,23 @@ function eventClickPolygon(e) {
     y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
 
     if(shapes.length === 0 ){
-      console.log('Polygon yang pada shapes 0')
       var polygon = new Polygon([[x, y]], [[0, 0, 0, 1]])
       shapes.push(polygon)
     }else if(shapes[shapes.length - 1].category !== "polygon"){
-      console.log('New polygon')
       var polygon = new Polygon([[x, y]], [[0, 0, 0, 1]])
       shapes.push(polygon)
     }else if(shapes[shapes.length - 1].category === "polygon"){
-      console.log('INI nambahin')
-      shapes[shapes.length - 1].vertices.push([x, y])
-      shapes[shapes.length - 1].color.push([0, 0, 0, 1])
-      if (shapes[shapes.length - 1].vertices.length == 2) {
-        console.log('untuk move')
-        shapes[shapes.length - 1].vertices.push([0, 0])
-        shapes[shapes.length - 1].color.push([0, 0, 0, 1]) // Dikasih warna
-        isMovePolyogn = true
+      if(!shapes[shapes.length - 1].isFinish){
+        shapes[shapes.length - 1].vertices.push([x, y])
+        shapes[shapes.length - 1].color.push([0, 0, 0, 1])
+        if (shapes[shapes.length - 1].vertices.length == 2) {
+          shapes[shapes.length - 1].vertices.push([0, 0])
+          shapes[shapes.length - 1].color.push([0, 0, 0, 1]) // Dikasih warna
+          isMovePolyogn = true
+        }
+      }else{
+        var polygon = new Polygon([[x, y]], [[0, 0, 0, 1]])
+        shapes.push(polygon)
       }
     }
   }
@@ -384,15 +385,10 @@ function finalizePolygon() {
   console.log('finish')
   isMovePolyogn = false;
   if(shapes[shapes.length - 1].category === 'polygon'){
+    shapes[shapes.length - 1].isFinish = true
     shapes[shapes.length - 1].vertices.pop()
   }
-  var padding = new Padding([[0, 0]], [[0, 0, 0, 1]]) //Membedakan antar 2 polygon yang berbeda
-  if (shapes[shapes.length - 1].category !== 'padding') {
-    shapes.push(padding)
-  }
 }
-
-// window.onload = main();
 
 function eventClickRectangle(e) {
   let x, y;
