@@ -454,9 +454,9 @@ function eventClickSelect(e) {
       for (let i = 0; i < shapes.length; i++) {
         if (shapes[i].category === "line") {
           console.log(shapes[i].vertices)
-          firstVertex = euclideanDistance(shapes[i].vertices[0], [x, y])
+          let firstVertex = euclideanDistance(shapes[i].vertices[0], [x, y])
           console.log("firstVertex", firstVertex)
-          secondVertex = euclideanDistance(shapes[i].vertices[1], [x, y])
+          let secondVertex = euclideanDistance(shapes[i].vertices[1], [x, y])
           console.log("secondVertex", secondVertex)
           if (firstVertex < selectRadius) {
             selectLineVertexIdx = 0
@@ -466,6 +466,14 @@ function eventClickSelect(e) {
           if (selectLineVertexIdx != -1) { // apakah dalam radius 
             console.log("tes")
             selectShapeCategory = "line"
+            selectShapeIdx = i
+            break
+          }
+        } else if (shapes[i].category === "square") {
+          referenceVertex = euclideanDistance(shapes[i].vertices[2], [x, y])
+          if (referenceVertex < selectRadius) {
+            console.log("kotak masuk")
+            selectShapeCategory = "square"
             selectShapeIdx = i
             break
           }
@@ -485,6 +493,29 @@ function eventMoveSelect(e) {
     if (selectShapeCategory === "line") {
       shapes[selectShapeIdx].vertices[selectLineVertexIdx][0] = x
       shapes[selectShapeIdx].vertices[selectLineVertexIdx][1] = y
+    } else if (selectShapeCategory === "square") {
+      // console.log(i);
+      let dx = x - shapes[selectShapeIdx].vertices[0][0]
+      let dy = y - shapes[selectShapeIdx].vertices[0][1]
+
+      let side = Math.min(Math.abs(dx), Math.abs(dy))
+      
+      if (dy > 0) {
+        dy = side
+      } else {
+        dy = -side
+      }
+
+      if (dx > 0) {
+        dx = side
+      } else {
+        dx = -side
+      }
+
+      shapes[selectShapeIdx].vertices[2][0] = shapes[selectShapeIdx].vertices[0][0] + dx
+      shapes[selectShapeIdx].vertices[2][1] = shapes[selectShapeIdx].vertices[0][1] + dy
+      shapes[selectShapeIdx].vertices[3][1] = shapes[selectShapeIdx].vertices[0][1] + dy
+      shapes[selectShapeIdx].vertices[1][0] = shapes[selectShapeIdx].vertices[0][0] + dx
     }
   }
 }
