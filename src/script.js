@@ -25,7 +25,7 @@ let shapes = []
 let vertices = []
 let colors = []
 
-const selectRadius = 0.05
+const allowedRadius = 0.07
 let selectShapeCategory = ""
 let selectShapeIdx = -1
 let selectLineVertexIdx = -1
@@ -57,7 +57,7 @@ isDownLine = false;
 isDownSquare = false;
 isMovePolyogn = false;
 isDownMove = false;
-currentEvent = "";
+let currentEvent = "";
 let currentShape;
 
 render();
@@ -149,34 +149,53 @@ function render() {
 function handleLine() {
   currentEvent = 'line'
   currentEventText.innerHTML = "Current Event: Line"
-  canvas.addEventListener('mousedown', (event) => {
+  canvas.onmousedown = function (event) {
     eventClickLine(event)
-  })
-
-  canvas.addEventListener('mousemove', (event) => {
+  }
+  canvas.onmousemove = function (event) {
     eventMoveLine(event)
-  })
-
-  canvas.addEventListener('mouseup', (event) => {
+  }
+  canvas.onmouseup = function (event) {
     eventFinishLine(event)
-  })
+  }
 }
 
 function handleSquare() {
   currentEvent = 'square'
-  currentEventText.innerHTML = "Current Event: Square"
-  canvas.addEventListener('mousedown', (event) => {
+  currentEventText.innerHTML = "Current Event: Line"
+
+  canvas.onmousedown = function (event) {
     eventClickSquare(event)
-  })
+  }
 
-  canvas.addEventListener('mousemove', (event) => {
+  canvas.onmousemove = function (event) {
     eventMoveSquare(event)
-  })
+  }
 
-  canvas.addEventListener('mouseup', (event) => {
+  canvas.onmouseup = function (event) {
     eventFinishSquare(event)
-  })
+  }
 }
+
+// function handleSquare() {
+//   currentEvent = 'square'
+//   currentEventText.innerHTML = "Current Event: Square"
+//   // canvas.addEventListener('click', function(event) {
+//   //   event.preventDefault()
+//   // })
+
+//   canvas.addEventListener('mousedown', (event) => {
+//     eventClickSquare(event)
+//   })
+
+//   canvas.addEventListener('mousemove', (event) => {
+//     eventMoveSquare(event)
+//   })
+
+//   canvas.addEventListener('mouseup', (event) => {
+//     eventFinishSquare(event)
+//   })
+// }
 
 
 function handlePolygon() {
@@ -264,6 +283,7 @@ function eventMoveLine(e) {
 
 function eventFinishLine(e) {
   isDownLine = false;
+  console.log(shapes)
   console.log("up");
 }
 
@@ -458,9 +478,9 @@ function eventClickSelect(e) {
           console.log("firstVertex", firstVertex)
           let secondVertex = euclideanDistance(shapes[i].vertices[1], [x, y])
           console.log("secondVertex", secondVertex)
-          if (firstVertex < selectRadius) {
+          if (firstVertex < allowedRadius) {
             selectLineVertexIdx = 0
-          } else if (secondVertex < selectRadius) {
+          } else if (secondVertex < allowedRadius) {
             selectLineVertexIdx = 1
           }
           if (selectLineVertexIdx != -1) { // apakah dalam radius 
@@ -471,7 +491,7 @@ function eventClickSelect(e) {
           }
         } else if (shapes[i].category === "square") {
           referenceVertex = euclideanDistance(shapes[i].vertices[2], [x, y])
-          if (referenceVertex < selectRadius) {
+          if (referenceVertex < allowedRadius) {
             console.log("kotak masuk")
             selectShapeCategory = "square"
             selectShapeIdx = i
