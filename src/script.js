@@ -145,7 +145,7 @@ function handleLine() {
 
 function handleSquare() {
   currentEvent = 'square'
-  currentEventText.innerHTML = "Current Event: Line"
+  currentEventText.innerHTML = "Current Event: Square"
 
   canvas.onmousedown = function (event) {
     eventClickSquare(event)
@@ -266,7 +266,7 @@ function eventClickSquare(e) {
     for (let i = 0; i < 4; i++) {
       squareVertices.push([x, y]);
       squareColor.push(
-        currentColor, currentColor, currentColor, currentColor);
+        currentColor);
     }
 
     isDownSquare = true
