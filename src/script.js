@@ -93,9 +93,9 @@ function render() {
     if (shapes[i].category === "padding") {
       continue
     }
-      for (let j = 0; j < shapes[i].color.length; j++) {
-        colors.push(shapes[i].color[j]);
-      }
+    for (let j = 0; j < shapes[i].color.length; j++) {
+      colors.push(shapes[i].color[j]);
+    }
   }
 
   // Isi buffer vBuffer
@@ -202,7 +202,7 @@ function handleSelect() {
   })
 }
 
-function handleDeletePolygonVertex(){
+function handleDeletePolygonVertex() {
   currentEvent = 'deleteVertexPolygon'
   currentEventText.innerHTML = "Current Event: Delete Polygon Vertex"
 
@@ -211,11 +211,11 @@ function handleDeletePolygonVertex(){
   })
 }
 
-function handleDisplayPolygonButton(){
-  if(currentEvent === "polygon" || currentEvent === "deleteVertexPolygon"){
+function handleDisplayPolygonButton() {
+  if (currentEvent === "polygon" || currentEvent === "deleteVertexPolygon") {
     document.getElementById('finalizePolygon').style.display = 'block'
     document.getElementById('deletePolygonVertex').style.display = 'block'
-  }else{
+  } else {
     document.getElementById('finalizePolygon').style.display = 'none'
     document.getElementById('deletePolygonVertex').style.display = 'none'
   }
@@ -288,7 +288,7 @@ function eventFinishLine(e) {
 }
 
 function eventClickSquare(e) {
-  if(currentEvent === 'square'){
+  if (currentEvent === 'square') {
     console.log("down")
 
     let x, y;
@@ -328,7 +328,7 @@ function eventMoveSquare(e) {
         let dy = y - shapes[i].vertices[0][1]
 
         let side = Math.min(Math.abs(dx), Math.abs(dy))
-        
+
         if (dy > 0) {
           dy = side
         } else {
@@ -378,14 +378,14 @@ function eventClickPolygon(e) {
     x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
     y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
 
-    if(shapes.length === 0 ){
+    if (shapes.length === 0) {
       var polygon = new Polygon([[x, y]], [currentColor])
       shapes.push(polygon)
-    }else if(shapes[shapes.length - 1].category !== "polygon"){
+    } else if (shapes[shapes.length - 1].category !== "polygon") {
       var polygon = new Polygon([[x, y]], [currentColor])
       shapes.push(polygon)
-    }else if(shapes[shapes.length - 1].category === "polygon"){
-      if(!shapes[shapes.length - 1].isFinish){
+    } else if (shapes[shapes.length - 1].category === "polygon") {
+      if (!shapes[shapes.length - 1].isFinish) {
         shapes[shapes.length - 1].vertices.push([x, y])
         shapes[shapes.length - 1].color.push(currentColor)
         if (shapes[shapes.length - 1].vertices.length == 2) {
@@ -393,7 +393,7 @@ function eventClickPolygon(e) {
           shapes[shapes.length - 1].color.push(currentColor) // Dikasih warna
           isMovePolyogn = true
         }
-      }else{
+      } else {
         var polygon = new Polygon([[x, y]], [currentColor])
         shapes.push(polygon)
       }
@@ -402,9 +402,9 @@ function eventClickPolygon(e) {
 }
 
 function finalizePolygon() {
-  if(currentEvent === "polygon"){
+  if (currentEvent === "polygon") {
     isMovePolyogn = false;
-    if(shapes[shapes.length - 1].category === 'polygon'){
+    if (shapes[shapes.length - 1].category === 'polygon') {
       shapes[shapes.length - 1].isFinish = true
       shapes[shapes.length - 1].vertices.pop()
       shapes[shapes.length - 1].color.pop()
@@ -412,16 +412,16 @@ function finalizePolygon() {
   }
 }
 
-function deletePolygonVertex(e){ //Menghapus Vertex polygon yang diklik ketika telah melakukan finish polygon
-  if(currentEvent === 'deleteVertexPolygon'){
+function deletePolygonVertex(e) { //Menghapus Vertex polygon yang diklik ketika telah melakukan finish polygon
+  if (currentEvent === 'deleteVertexPolygon') {
     x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
     y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
-    for (let i = 0; i < shapes.length; i++){
+    for (let i = 0; i < shapes.length; i++) {
       var vertexIdx = 0
-      if(shapes[i].category === "polygon"){
-        for(let temp of shapes[i].vertices){
+      if (shapes[i].category === "polygon") {
+        for (let temp of shapes[i].vertices) {
           referenceVertex = euclideanDistance(temp, [x, y])
-          if(referenceVertex < allowedRadius){
+          if (referenceVertex < allowedRadius) {
             shapes[i].vertices.splice(vertexIdx, 1)
             shapes[i].color.splice(vertexIdx, 1)
             break
@@ -443,7 +443,7 @@ function eventClickRectangle(e) {
     console.log("Rect Mode");
     currentShape = new Rectangle([], []);
 
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 4; i++) {
       currentShape.vertices.push([x, y]);
       currentShape.color.push(currentColor);
     }
@@ -473,8 +473,8 @@ function eventMoveRectangle(e) {
     currentShape.vertices = [
       [oldX, oldY],
       [newX, oldY],
-      [oldX, newY],
-      [newX, oldY],
+      // [oldX, newY],
+      // [newX, oldY],
       [newX, newY],
       [oldX, newY]
     ]
@@ -521,17 +521,28 @@ function eventClickSelect(e) {
             selectShapeIdx = i
             break
           }
-        }else if(shapes[i].category === "polygon" && shapeSelect.value === "polygon"){
+        } else if (shapes[i].category === "polygon" && shapeSelect.value === "polygon") {
           var vertexIdx = 0
-          for(let temp of shapes[i].vertices){
+          for (let temp of shapes[i].vertices) {
             referenceVertex = euclideanDistance(temp, [x, y])
-            if(referenceVertex < allowedRadius){
+            if (referenceVertex < allowedRadius) {
               selectShapeCategory = "polygon"
               selectShapeIdx = i
               selectPolygonVertexIdx = vertexIdx
               break
             }
             vertexIdx++
+          }
+        } else if (shapes[i].category === "rectangle" && shapeSelect.value === "rectangle") {
+          let selectedRectangleVertex = shapes[i].vertices
+            .map(vertex => [euclideanDistance(vertex, [x, y]), shapes[i].vertices.indexOf(vertex)])
+            .filter(distanceResult => distanceResult[0] < allowedRadius)
+            .reduce((currentMinimum, distanceResult) => currentMinimum[0] < distanceResult[0] ? currentMinimum : distanceResult, [Number.MAX_VALUE, null])
+          if (selectedRectangleVertex[1] !== null) {
+            selectShapeCategory = "rectangle"
+            selectShapeIdx = i
+            selectRectangleVertexIdx = selectedRectangleVertex[1]
+            break
           }
         }
       }
@@ -555,7 +566,7 @@ function eventMoveSelect(e) {
       let dy = y - shapes[selectShapeIdx].vertices[0][1]
 
       let side = Math.min(Math.abs(dx), Math.abs(dy))
-      
+
       if (dy > 0) {
         dy = side
       } else {
@@ -572,9 +583,22 @@ function eventMoveSelect(e) {
       shapes[selectShapeIdx].vertices[2][1] = shapes[selectShapeIdx].vertices[0][1] + dy
       shapes[selectShapeIdx].vertices[3][1] = shapes[selectShapeIdx].vertices[0][1] + dy
       shapes[selectShapeIdx].vertices[1][0] = shapes[selectShapeIdx].vertices[0][0] + dx
-    }else if(selectShapeCategory === "polygon"){
+    } else if (selectShapeCategory === "polygon") {
       shapes[selectShapeIdx].vertices[selectPolygonVertexIdx][0] = x
       shapes[selectShapeIdx].vertices[selectPolygonVertexIdx][1] = y
+    } else if (selectShapeCategory === "rectangle") {
+      let vertexSameX, vertexSameY
+      for (let i = 0; i < 4; i++) {
+        if (shapes[selectShapeIdx].vertices[i][0] === shapes[selectShapeIdx].vertices[selectRectangleVertexIdx][0] && selectRectangleVertexIdx !== i) {
+          vertexSameX = shapes[selectShapeIdx].vertices[i]
+        }
+        if (shapes[selectShapeIdx].vertices[i][1] === shapes[selectShapeIdx].vertices[selectRectangleVertexIdx][1] && selectRectangleVertexIdx !== i) {
+          vertexSameY = shapes[selectShapeIdx].vertices[i]
+        }
+      }
+      shapes[selectShapeIdx].vertices[selectRectangleVertexIdx] = [x, y]
+      vertexSameX[0] = x
+      vertexSameY[1] = y
     }
   }
 }
@@ -593,46 +617,46 @@ function hexToRgb(hex) {
   } : null;
 }
 
-function getColor(){
+function getColor() {
   var colorHex = document.getElementById('current-color').value
   var rgb = hexToRgb(colorHex)
-  var selectedColor = [rgb.r/255, rgb.g/255, rgb.b/255,  1]
+  var selectedColor = [rgb.r / 255, rgb.g / 255, rgb.b / 255, 1]
   currentColor = selectedColor
 }
 
 /** Transalsi dan Rotasi Percobaan hapus comment jika ingin mencoba*/
 
-function translateHorizontal(input){
-  if(currentEvent === 'move'){
+function translateHorizontal(input) {
+  if (currentEvent === 'move') {
     var valueRange = input.value
-    var normalizeValue = valueRange/1000000
-    for(let vertex of shapes[selectShapeIdx].vertices){ //Tekan dulu salah satu vertex dari model yang dibuat pakai event select vertex
+    var normalizeValue = valueRange / 1000000
+    for (let vertex of shapes[selectShapeIdx].vertices) { //Tekan dulu salah satu vertex dari model yang dibuat pakai event select vertex
       vertex[0] += normalizeValue
     }
   }
 }
 
-function translateVertical(input){
-  if(currentEvent === 'move'){
+function translateVertical(input) {
+  if (currentEvent === 'move') {
     var valueRange = input.value
-    var normalizeValue = valueRange/1000000
-    for(let vertex of shapes[selectShapeIdx].vertices){ //Tekan dulu salah satu vertex dari model yang dibuat pakai event select vertex
+    var normalizeValue = valueRange / 1000000
+    for (let vertex of shapes[selectShapeIdx].vertices) { //Tekan dulu salah satu vertex dari model yang dibuat pakai event select vertex
       vertex[1] += normalizeValue
     }
   }
 }
 
-function translateReset(input){
+function translateReset(input) {
   input.value = 0
 }
 
-function rotateModel(input){ //Rotate terhadapt 0, 0 canvas
-  if(currentEvent === 'move'){
+function rotateModel(input) { //Rotate terhadapt 0, 0 canvas
+  if (currentEvent === 'move') {
     var degree = input.value
     degree = degree * Math.PI / 180
-    for(let vertex of shapes[selectShapeIdx].vertices){ //Tekan dulu salah satu vertex dari model yang dibuat pakai event select vertex
-      var newX = (Math.cos(degree)*vertex[0]) - (Math.sin(degree)*vertex[1])
-      var newY = (Math.cos(degree)*vertex[1]) + (Math.sin(degree)*vertex[0])
+    for (let vertex of shapes[selectShapeIdx].vertices) { //Tekan dulu salah satu vertex dari model yang dibuat pakai event select vertex
+      var newX = (Math.cos(degree) * vertex[0]) - (Math.sin(degree) * vertex[1])
+      var newY = (Math.cos(degree) * vertex[1]) + (Math.sin(degree) * vertex[0])
       vertex[0] = newX
       vertex[1] = newY
     }
@@ -651,7 +675,7 @@ function eventClickVertexColorChange(event) {
     for (let i = 0; i < shapes.length; i++) {
       if (shapes[i].category === "line" && shapeSelect.value === "line") {
         console.log(shapes[i].vertices)
-        for (let j = 0; shapes[i].vertices.length; j ++) {
+        for (let j = 0; shapes[i].vertices.length; j++) {
           referenceVertex = euclideanDistance(shapes[i].vertices[j], [x, y])
           console.log(referenceVertex < allowedRadius)
           if (referenceVertex < allowedRadius) {
@@ -661,7 +685,7 @@ function eventClickVertexColorChange(event) {
         }
       } else if (shapes[i].category === "square" && shapeSelect.value === "square") {
         console.log("masuk")
-        for (let j = 0; shapes[i].vertices.length; j ++) {
+        for (let j = 0; shapes[i].vertices.length; j++) {
           referenceVertex = euclideanDistance(shapes[i].vertices[j], [x, y])
           console.log(referenceVertex < allowedRadius)
           if (referenceVertex < allowedRadius) {
@@ -669,16 +693,28 @@ function eventClickVertexColorChange(event) {
             break
           }
         }
-      }else if(shapes[i].category === "polygon" && shapeSelect.value === "polygon"){
+      } else if (shapes[i].category === "polygon" && shapeSelect.value === "polygon") {
         var vertexIdx = 0
-          for(let temp of shapes[i].vertices){
-            referenceVertex = euclideanDistance(temp, [x, y])
-            if(referenceVertex < allowedRadius){
-              shapes[i].color[vertexIdx] = currentColor //Pilih terlebih dahulu color lalu klik vertex yang ingin diganti warnanya
-              break
-            }
-            vertexIdx++
+        for (let temp of shapes[i].vertices) {
+          referenceVertex = euclideanDistance(temp, [x, y])
+          if (referenceVertex < allowedRadius) {
+            shapes[i].color[vertexIdx] = currentColor //Pilih terlebih dahulu color lalu klik vertex yang ingin diganti warnanya
+            break
           }
+          vertexIdx++
+        }
+      } else if (shapes[i].category === "rectangle" && shapeSelect.value === "rectangle") {
+        let selectedRectangleVertex = shapes[i].vertices
+          .map(vertex => [euclideanDistance(vertex, [x, y]), shapes[i].vertices.indexOf(vertex)])
+          .filter(distanceResult => distanceResult[0] < allowedRadius)
+          .reduce((currentMinimum, distanceResult) => currentMinimum[0] < distanceResult[0] ? currentMinimum : distanceResult, [Number.MAX_VALUE, null])
+        if (selectedRectangleVertex[1] !== null) {
+          shapes[i].color[selectedRectangleVertex[1]] = currentColor
+          // selectShapeCategory = "rectangle"
+          // selectShapeIdx = i
+          // selectRectangleVertexIdx = selectedRectangleVertex[1]
+          break
+        }
       }
     }
   }
