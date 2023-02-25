@@ -592,29 +592,44 @@ function getColor(){
   currentColor = selectedColor
 }
 
-function translateHorizontal(input){
-  if(currentEvent === 'move'){
-    var valueRange = input.value
-    var normalizeValue = valueRange/1000000
-    for(let vertex of shapes[selectShapeIdx].vertices){ //Tekan dulu salah satu vertex dari model yang dibuat pakai event select vertex
-      vertex[0] += normalizeValue
-    }
-  }
-}
+/** Transalsi dan Rotasi Percobaan hapus comment jika ingin mencoba*/
 
-function translateVertical(input){
-  if(currentEvent === 'move'){
-    var valueRange = input.value
-    var normalizeValue = valueRange/1000000
-    for(let vertex of shapes[selectShapeIdx].vertices){ //Tekan dulu salah satu vertex dari model yang dibuat pakai event select vertex
-      vertex[1] += normalizeValue
-  }
-  }
-}
+// function translateHorizontal(input){
+//   if(currentEvent === 'move'){
+//     var valueRange = input.value
+//     var normalizeValue = valueRange/1000000
+//     for(let vertex of shapes[selectShapeIdx].vertices){ //Tekan dulu salah satu vertex dari model yang dibuat pakai event select vertex
+//       vertex[0] += normalizeValue
+//     }
+//   }
+// }
 
-function translateReset(input){
-  input.value = 0
-}
+// function translateVertical(input){
+//   if(currentEvent === 'move'){
+//     var valueRange = input.value
+//     var normalizeValue = valueRange/1000000
+//     for(let vertex of shapes[selectShapeIdx].vertices){ //Tekan dulu salah satu vertex dari model yang dibuat pakai event select vertex
+//       vertex[1] += normalizeValue
+//     }
+//   }
+// }
+
+// function translateReset(input){
+//   input.value = 0
+// }
+
+// function rotateModel(input){ //Rotate terhadapt 0, 0 canvas
+//   if(currentEvent === 'move'){
+//     var degree = input.value
+//     degree = degree * Math.PI / 180
+//     for(let vertex of shapes[selectShapeIdx].vertices){ //Tekan dulu salah satu vertex dari model yang dibuat pakai event select vertex
+//       var newX = (Math.cos(degree)*vertex[0]) - (Math.sin(degree)*vertex[1])
+//       var newY = (Math.cos(degree)*vertex[1]) + (Math.sin(degree)*vertex[0])
+//       vertex[0] = newX
+//       vertex[1] = newY
+//     }
+//   }
+// }
 
 function eventClickVertexColorChange(event) {
   console.log(currentEvent)
