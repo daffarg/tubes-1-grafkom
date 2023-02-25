@@ -369,6 +369,7 @@ function finalizePolygon() {
     if(shapes[shapes.length - 1].category === 'polygon'){
       shapes[shapes.length - 1].isFinish = true
       shapes[shapes.length - 1].vertices.pop()
+      shapes[shapes.length - 1].color.pop()
     }
   }
 }
@@ -465,6 +466,7 @@ function eventClickSelect(e) {
           for(let temp of shapes[i].vertices){
             referenceVertex = euclideanDistance(temp, [x, y])
             if(referenceVertex < allowedRadius){
+              shapes[i].color[vertexIdx] = currentColor //Pilih terlebih dahulu color lalu klik vertex yang ingin diganti warnanya
               selectShapeCategory = "polygon"
               selectShapeIdx = i
               selectPolygonVertexIdx = vertexIdx
