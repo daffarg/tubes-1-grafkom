@@ -371,7 +371,7 @@ function eventClickPolygon(e) {
         shapes[shapes.length - 1].vertices.push([x, y])
         shapes[shapes.length - 1].color.push(currentColor)
         if (shapes[shapes.length - 1].vertices.length == 2) {
-          shapes[shapes.length - 1].vertices.push([0, 0])
+          shapes[shapes.length - 1].vertices.push([x, y])
           shapes[shapes.length - 1].color.push(currentColor) // Dikasih warna
           isMovePolyogn = true
         }
@@ -585,7 +585,7 @@ function getColor(){
 function translateHorizontal(input){
     var valueRange = input.value
     var normalizeValue = valueRange/1000000
-    for(let vertex of shapes[selectShapeIdx].vertices){ //Tekan dulu salah satu titik dari model yang dibuat
+    for(let vertex of shapes[selectShapeIdx].vertices){ //Tekan dulu salah satu vertex dari model yang dibuat pakai event select vertex
       vertex[0] += normalizeValue
     }
 }
