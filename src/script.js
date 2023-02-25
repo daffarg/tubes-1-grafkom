@@ -27,6 +27,10 @@ let shapes = []
 let vertices = []
 let colors = []
 
+let animation = false
+let theta = 0.0
+let prevTheta = 0.0
+
 const allowedRadius = 0.1
 let selectShapeCategory = ""
 let selectShapeIdx = -1
@@ -37,6 +41,8 @@ let selectPolygonVertexIdx = -1
 let prevHorizontalTranslateVal = 0
 let prevVerticalTranslateVal = 0
 let prevDegree = 0
+
+let animationShapesIdx = []
 
 let currentEventText = document.getElementById("current-action-text")
 
@@ -76,6 +82,31 @@ function render() {
   // Clear canvas
   gl.clearColor(0.8, 0.8, 0.8, 1.0);
   gl.clear(gl.COLOR_BUFFER_BIT);
+
+  if (animation) {
+    theta += (theta * Math.PI / 180) - prevTheta + 0.1
+    prevTheta = theta
+
+    console.log(animationShapesIdx)
+
+    for (let i = 0; i < animationShapesIdx.length; i ++) {
+      let modelCenter = shapes[i].vertices
+      .reduce((totalVertexSum, vertex) => [totalVertexSum[0] + vertex[0], totalVertexSum[1] + vertex[1]])
+      .map(axis => axis / shapes[i].vertices.length)
+
+      for (let vertex of shapes[i].vertices) { //Tekan dulu salah satu vertex dari model yang dibuat pakai event select vertex
+      
+      vertex[0] -= modelCenter[0]
+      vertex[1] -= modelCenter[1]
+
+      let newX = (Math.cos(theta) * vertex[0]) - (Math.sin(theta) * vertex[1])
+      let newY = (Math.cos(theta) * vertex[1]) + (Math.sin(theta) * vertex[0])
+
+      vertex[0] = newX + modelCenter[0]
+      vertex[1] = newY + modelCenter[1]
+      }
+    }
+  }
 
   // Kosongin array
   let vertices = []
@@ -239,6 +270,14 @@ function handleLineLengthChange() {
   currentEventText.innerHTML = "Current Event: Change Line Length"
   canvas.onclick = function (event) {
     eventClickLineLengthChange(event)
+  }
+}
+
+function handleSelectVertexForAnimation() {
+  currentEvent = "selectVertexForAnim"
+  currentEventText.innerHTML = "Current Event: Select Vertex for Animation"
+  canvas.onclick = function (event) {
+    eventSelectVertexForAnimation(event)
   }
 }
 
@@ -907,4 +946,45 @@ function uploadFromFile(event){
   });
 
   reader.readAsText(file);
+}
+
+function startAnimation() {
+  document.getElementById("current-animation-state").innerHTML = "Animation: True"
+  animation = true
+}
+
+function stopAnimation() {
+  document.getElementById("current-animation-state").innerHTML = "Animation: False"
+  animation = false
+}
+
+function eventSelectVertexForAnimation(event) {
+  if (currentEvent === 'selectVertexForAnim') {
+    let x, y;
+    // normalize
+    x = (2 * (event.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+    y = 1 - (2 * (event.clientY - canvas.offsetTop)) / canvas.clientHeight;
+  
+    console.log("x", x)
+    console.log("y", y)
+    let selected = false
+  
+    for (let i = 0; i < shapes.length; i ++) {
+      if (shapeSelect.value === shapes[i].category) {
+        for (let j = 0; j < shapes[i].vertices.length; j ++) {
+          referenceVertex = euclideanDistance(shapes[i].vertices[j], [x, y])
+          console.log("reference", referenceVertex)
+          if (referenceVertex < allowedRadius) {
+            console.log("shape masuk animasi")
+            animationShapesIdx.push(i)
+            selected = true
+            break
+          }
+        }
+      }
+      if (selected) {
+        break
+      }
+    }
+  }
 }
