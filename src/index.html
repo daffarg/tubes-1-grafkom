@@ -31,6 +31,8 @@
                     <button onclick="handleSelect()">Select Vertex</button>
                     <button onclick="handleVertexColorChange()">Change Color of Vertex</button>
                 <button onclick="handleLineLengthChange()">Change Length of Line</button>
+                <input type="file" id="file-input" onchange="uploadFromFile(event)">
+                <button type="button" onclick="saveToFile()">Download</button>
                     <input type="color" value="#ff0000" id="current-color" onchange="getColor()">
                 </div>
             <br>
