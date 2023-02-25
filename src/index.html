@@ -26,7 +26,7 @@
             <h2 id="current-action-text"> Current Action: <b class="current-action">None</b></h2>
             <div class="transform-translate">
                 <h3>Translate</h3>
-                <input type="range" min="1" max="500" class="transform-slider" id="transform-translate">
+                <input type="range" min="-1000000" max="1000000" class="transform-slider" id="transform-translate" oninput="translateHorizontal(this)" onmouseup="translateHorizontalReset(this)">
             </div>
             <div class="transform-rotate">
                 <h3>Rotate</h3>

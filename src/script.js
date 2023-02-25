@@ -581,3 +581,15 @@ function getColor(){
   var selectedColor = [rgb.r/255, rgb.g/255, rgb.b/255,  1]
   currentColor = selectedColor
 }
+
+function translateHorizontal(input){
+    var valueRange = input.value
+    var normalizeValue = valueRange/1000000
+    for(let vertex of shapes[selectShapeIdx].vertices){ //Tekan dulu salah satu titik dari model yang dibuat
+      vertex[0] += normalizeValue
+    }
+}
+
+function translateHorizontalReset(input){
+  input.value = 0
+}
