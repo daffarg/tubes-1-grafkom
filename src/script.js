@@ -65,6 +65,7 @@ let currentColor = [1, 0, 0, 1]
 render();
 
 function render() {
+  handleDisplayPolygonButton()
   // Clear canvas
   gl.clearColor(0.8, 0.8, 0.8, 1.0);
   gl.clear(gl.COLOR_BUFFER_BIT);
@@ -197,6 +198,25 @@ function handleSelect() {
   canvas.addEventListener("mouseup", (event) => {
     eventFinishSelect(event);
   })
+}
+
+function handleDeletePolygonVertex(){
+  currentEvent = 'deleteVertexPolygon'
+  currentEventText.innerHTML = "Current Event: Delete Polygon Vertex"
+
+  canvas.addEventListener("mousedown", (event) => {
+    deletePolygonVertex(event);
+  })
+}
+
+function handleDisplayPolygonButton(){
+  if(currentEvent === "polygon"){
+    document.getElementById('finalizePolygon').style.display = 'block'
+    document.getElementById('deletePolygonVertex').style.display = 'block'
+  }else{
+    document.getElementById('finalizePolygon').style.display = 'none'
+    document.getElementById('deletePolygonVertex').style.display = 'none'
+  }
 }
 
 function eventClickLine(e) {
@@ -370,6 +390,27 @@ function finalizePolygon() {
       shapes[shapes.length - 1].isFinish = true
       shapes[shapes.length - 1].vertices.pop()
       shapes[shapes.length - 1].color.pop()
+    }
+  }
+}
+
+function deletePolygonVertex(e){ //Menghapus Vertex polygon yang diklik ketika telah melakukan finish polygon
+  if(currentEvent === 'deleteVertexPolygon'){
+    x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+    y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
+    for (let i = 0; i < shapes.length; i++){
+      var vertexIdx = 0
+      if(shapes[i].category === "polygon"){
+        for(let temp of shapes[i].vertices){
+          referenceVertex = euclideanDistance(temp, [x, y])
+          if(referenceVertex < allowedRadius){
+            shapes[i].vertices.splice(vertexIdx, 1)
+            shapes[i].color.splice(vertexIdx, 1)
+            break
+          }
+          vertexIdx++
+        }
+      }
     }
   }
 }
