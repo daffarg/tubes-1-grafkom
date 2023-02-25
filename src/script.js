@@ -751,19 +751,6 @@ function eventClickLineLengthChange(event) {
             const x2_baru = shapes[i].vertices[1][0] + increase * Math.cos(theta);
             const y2_baru = shapes[i].vertices[1][1] + increase * Math.sin(theta);
 
-            const leftBound = Math.min(shapes[i].vertices[0][0], shapes[i].vertices[1][0]);
-            const rightBound = Math.max(shapes[i].vertices[0][0], shapes[i].vertices[1][0]);
-
-            // if (x1_baru < leftBound || x1_baru > rightBound || x2_baru < leftBound || x2_baru > rightBound) {
-            //   const lebar_asli = Math.abs(shapes[i].vertices[1][0] - shapes[i].vertices[0][0]);
-            //   const perluasan = (increase - lebar_asli) / 2;
-            //   const arah_perluasan = Math.sign(shapes[i].vertices[1][0] - shapes[i].vertices[0][0]);
-
-            //   shapes[i].vertices[0][0] = shapes[i].vertices[0][0] - perluasan * arah_perluasan
-            //   shapes[i].vertices[1][0] = shapes[i].vertices[1][0] + perluasan * arah_perluasan
-            //   break
-            // }  
-
             shapes[i].vertices[0][0] = x1_baru
             shapes[i].vertices[0][1] = y1_baru
             shapes[i].vertices[1][0] = x2_baru
