@@ -210,7 +210,7 @@ function handleDeletePolygonVertex(){
 }
 
 function handleDisplayPolygonButton(){
-  if(currentEvent === "polygon"){
+  if(currentEvent === "polygon" || currentEvent === "deleteVertexPolygon"){
     document.getElementById('finalizePolygon').style.display = 'block'
     document.getElementById('deletePolygonVertex').style.display = 'block'
   }else{
