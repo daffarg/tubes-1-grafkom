@@ -12,39 +12,46 @@
     <div class="canvas-group">
         <canvas id="canvas" width="500vw" height="500vh"></canvas>
         <div class="canvas-menu">
-            <div class="button-group">
-                <button>Help</button>
-                <button onclick="handleLine()">Draw Line</button>
-                <button onclick="handleSquare()">Draw Square</button>
-                <button onclick="handleRectangle()">Draw Rectangle</button>
-                <button onclick="handlePolygon()">Draw Polygon</button>
-                <button id="finalizePolygon" style="display: none;" onclick="finalizePolygon()">Finish Polygon</button>
-                <button id="deletePolygonVertex" style="display: none;" onclick="handleDeletePolygonVertex()">Delete Polygon Vertex</button>
-                <button onclick="handleSelect()">Select Vertex</button>
-                <button onclick="handleVertexColorChange()">Change Color of Vertex</button>
-                <input type="color" value="#ff0000" id="current-color" onchange="getColor()"> 
-            </div>
-            <div>
-                <label for="shapes">Choose a shape for select vertex or color change:</label>
-                <select name="shapes" id="shapes">
-                    <option value="line">Line</option>
-                    <option value="square">Square</option>
-                    <option value="rectangle">Rectangle</option>
-                    <option value="polygon">Polygon</option>
-                </select>
-            </div>
-            <h2 id="current-action-text"> Current Action: <b class="current-action">None</b></h2>
-            <div class="transformX-translate">
-                <h3>Horizontal Translate</h3>
-                <input type="range" min="-1000000" max="1000000" class="transform-slider" id="transformX-translate" oninput="translateHorizontal(this)" onmouseup="translateReset(this)">
-            </div>
             <div class="transformY-translate">
-                <input orient="vertical" type="range" min="-1000000" max="1000000" class="transform-slider" id="transformY-translate" oninput="translateVertical(this)" onmouseup="translateReset(this)">
+                <input orient="vertical" type="range" min="-1000000" max="1000000" class="transform-slider"
+                    id="transformY-translate" oninput="translateVertical(this)" onmouseup="translateReset(this)">
                 <h3>Vertical Translate</h3>
             </div>
-            <div class="transform-rotate">
-                <h3>Rotate</h3>
-                <input type="range" min="-360" max="360" class="transform-slider" id="transform-rotate" oninput="rotateModel(this)" onmouseup="translateReset(this)">
+            <div>
+                <div class="button-group">
+                    <button>Help</button>
+                    <button onclick="handleLine()">Draw Line</button>
+                    <button onclick="handleSquare()">Draw Square</button>
+                    <button onclick="handleRectangle()">Draw Rectangle</button>
+                    <button onclick="handlePolygon()">Draw Polygon</button>
+                    <button id="finalizePolygon" style="display: none;" onclick="finalizePolygon()">Finish
+                        Polygon</button>
+                    <button id="deletePolygonVertex" style="display: none;" onclick="handleDeletePolygonVertex()">Delete
+                        Polygon Vertex</button>
+                    <button onclick="handleSelect()">Select Vertex</button>
+                    <button onclick="handleVertexColorChange()">Change Color of Vertex</button>
+                    <input type="color" value="#ff0000" id="current-color" onchange="getColor()">
+                </div>
+                <div>
+                    <label for="shapes">Choose a shape for select vertex or color change:</label>
+                    <select name="shapes" id="shapes">
+                        <option value="line">Line</option>
+                        <option value="square">Square</option>
+                        <option value="rectangle">Rectangle</option>
+                        <option value="polygon">Polygon</option>
+                    </select>
+                </div>
+                <h2 id="current-action-text"> Current Action: <b class="current-action">None</b></h2>
+                <div class="transformX-translate">
+                    <h3>Horizontal Translate</h3>
+                    <input type="range" min="-1000000" max="1000000" class="transform-slider" id="transformX-translate"
+                        oninput="translateHorizontal(this)" onmouseup="translateReset(this)">
+                </div>
+                <div class="transform-rotate">
+                    <h3>Rotate</h3>
+                    <input type="range" min="-360" max="360" class="transform-slider" id="transform-rotate"
+                        oninput="rotateModel(this)" onmouseup="translateReset(this)">
+                </div>
             </div>
         </div>
     </div>
