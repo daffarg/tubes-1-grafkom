@@ -36,6 +36,7 @@ let selectPolygonVertexIdx = -1
 
 let prevHorizontalTranslateVal = 0
 let prevVerticalTranslateVal = 0
+let prevDegree = 0
 
 let currentEventText = document.getElementById("current-action-text")
 
@@ -747,6 +748,31 @@ function rotateModel(input) { //Rotate terhadapt 0, 0 canvas
       var newY = (Math.cos(degree) * vertex[1]) + (Math.sin(degree) * vertex[0])
       vertex[0] = newX
       vertex[1] = newY
+    }
+  }
+}
+
+function rotateModelSelf(input) { //Rotate terhadapt diri sendiri canvas
+  console.log("rotate Self")
+  if (currentEvent === 'move') {
+    var degree = input.value
+    degree = degree * Math.PI / 180 - prevDegree
+    prevDegree = degree
+
+    let modelCenter = shapes[selectShapeIdx].vertices
+      .reduce((totalVertexSum, vertex) => [totalVertexSum[0] + vertex[0], totalVertexSum[1] + vertex[1]])
+      .map(axis => axis / shapes[selectShapeIdx].vertices.length)
+
+    for (let vertex of shapes[selectShapeIdx].vertices) { //Tekan dulu salah satu vertex dari model yang dibuat pakai event select vertex
+      
+      vertex[0] -= modelCenter[0]
+      vertex[1] -= modelCenter[1]
+
+      let newX = (Math.cos(degree) * vertex[0]) - (Math.sin(degree) * vertex[1])
+      let newY = (Math.cos(degree) * vertex[1]) + (Math.sin(degree) * vertex[0])
+
+      vertex[0] = newX + modelCenter[0]
+      vertex[1] = newY + modelCenter[1]
     }
   }
 }
