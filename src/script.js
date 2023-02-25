@@ -18,6 +18,7 @@ const fSource = `
 
 const canvas = document.querySelector('#canvas')
 const shapeSelect = document.getElementById('shapes')
+const newLineLengthInput = document.getElementById('new-line-length')
 const gl = setupWebGL(canvas);
 gl.viewport(0, 0, canvas.width, canvas.height);
 gl.clearColor(0.8, 0.8, 0.8, 1.0);
@@ -225,6 +226,14 @@ function handleVertexColorChange() {
   currentEventText.innerHTML = "Current Event: Change Vertex Color"
   canvas.onclick = function (event) {
     eventClickVertexColorChange(event);
+  }
+}
+
+function handleLineLengthChange() {
+  currentEvent = 'changeLineLength'
+  currentEventText.innerHTML = "Current Event: Change Line Length"
+  canvas.onclick = function (event) {
+    eventClickLineLengthChange(event)
   }
 }
 
@@ -670,6 +679,61 @@ function eventClickVertexColorChange(event) {
             }
             vertexIdx++
           }
+      }
+    }
+  }
+}
+
+function eventClickLineLengthChange(event) {
+  if (currentEvent === 'changeLineLength') {
+    let x, y;
+    // normalize
+    x = (2 * (event.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+    y = 1 - (2 * (event.clientY - canvas.offsetTop)) / canvas.clientHeight;
+
+    for (let i = 0; i < shapes.length; i ++) {
+      if (shapes[i].category === 'line') {
+        for (let j = 0; j < shapes[i].vertices.length; j ++) {
+          referenceVertex = euclideanDistance(shapes[i].vertices[j], [x, y])
+          if (referenceVertex < allowedRadius) {
+            console.log("masuk radius (ubah panjang garis)")
+            xMiddle = (shapes[i].vertices[0][0] + shapes[i].vertices[1][0]) / 2
+            yMiddle = (shapes[i].vertices[0][1] + shapes[i].vertices[1][1]) / 2
+
+            const d1 = Math.sqrt((shapes[i].vertices[0][0] - xMiddle) ** 2 + (shapes[i].vertices[0][1]  - yMiddle) ** 2);
+            const d2 = Math.sqrt((shapes[i].vertices[1][0] - xMiddle) ** 2 + (shapes[i].vertices[1][1]  - yMiddle) ** 2);
+            
+            const increase = (newLineLengthInput.value - d1 - d2) / 2;
+
+            const theta = Math.atan2(shapes[i].vertices[1][1] - shapes[i].vertices[0][1], shapes[i].vertices[1][0] - shapes[i].vertices[0][0]);
+
+            // Tentukan koordinat titik pertama baru pada garis
+            const x1_baru = shapes[i].vertices[0][0] - increase * Math.cos(theta);
+            const y1_baru = shapes[i].vertices[0][1] - increase * Math.sin(theta);
+
+            // Tentukan koordinat titik kedua baru pada garis
+            const x2_baru = shapes[i].vertices[1][0] + increase * Math.cos(theta);
+            const y2_baru = shapes[i].vertices[1][1] + increase * Math.sin(theta);
+
+            const leftBound = Math.min(shapes[i].vertices[0][0], shapes[i].vertices[1][0]);
+            const rightBound = Math.max(shapes[i].vertices[0][0], shapes[i].vertices[1][0]);
+
+            // if (x1_baru < leftBound || x1_baru > rightBound || x2_baru < leftBound || x2_baru > rightBound) {
+            //   const lebar_asli = Math.abs(shapes[i].vertices[1][0] - shapes[i].vertices[0][0]);
+            //   const perluasan = (increase - lebar_asli) / 2;
+            //   const arah_perluasan = Math.sign(shapes[i].vertices[1][0] - shapes[i].vertices[0][0]);
+
+            //   shapes[i].vertices[0][0] = shapes[i].vertices[0][0] - perluasan * arah_perluasan
+            //   shapes[i].vertices[1][0] = shapes[i].vertices[1][0] + perluasan * arah_perluasan
+            //   break
+            // }  
+
+            shapes[i].vertices[0][0] = x1_baru
+            shapes[i].vertices[0][1] = y1_baru
+            shapes[i].vertices[1][0] = x2_baru
+            shapes[i].vertices[1][1] = y2_baru
+          }
+        }
       }
     }
   }

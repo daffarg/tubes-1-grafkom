@@ -22,9 +22,15 @@
                 <button id="deletePolygonVertex" style="display: none;" onclick="handleDeletePolygonVertex()">Delete Polygon Vertex</button>
                 <button onclick="handleSelect()">Select Vertex</button>
                 <button onclick="handleVertexColorChange()">Change Color of Vertex</button>
+                <button onclick="handleLineLengthChange()">Change Length of Line</button>
                 <input type="color" value="#ff0000" id="current-color" onchange="getColor()"> 
             </div>
+            <br>
             <div>
+                <label for="newLineLength">Enter new line length:</label>
+                    <input type="number" step="any" id="new-line-length" name="myFloatInput">
+                <br>
+                <br>
                 <label for="shapes">Choose a shape for select vertex or color change:</label>
                 <select name="shapes" id="shapes">
                     <option value="line">Line</option>
