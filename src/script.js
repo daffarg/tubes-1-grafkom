@@ -434,7 +434,7 @@ function eventClickRectangle(e) {
     console.log("Rect Mode");
     currentShape = new Rectangle([], []);
 
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 4; i++) {
       currentShape.vertices.push([x, y]);
       currentShape.color.push(currentColor);
     }
@@ -464,8 +464,8 @@ function eventMoveRectangle(e) {
     currentShape.vertices = [
       [oldX, oldY],
       [newX, oldY],
-      [oldX, newY],
-      [newX, oldY],
+      // [oldX, newY],
+      // [newX, oldY],
       [newX, newY],
       [oldX, newY]
     ]
@@ -524,6 +524,17 @@ function eventClickSelect(e) {
             }
             vertexIdx++
           }
+        } else if (shapes[i].category === "rectangle" && shapeSelect.value === "rectangle"){
+          let selectedRectangleVertex = shapes[i].vertices
+            .map(vertex => [euclideanDistance(vertex, [x, y]), shapes[i].vertices.indexOf(vertex)])
+            .filter(distanceResult => distanceResult[0] < allowedRadius)
+            .reduce((currentMinimum, distanceResult) => currentMinimum[0] < distanceResult[0] ? currentMinimum : distanceResult, [Number.MAX_VALUE, null])
+          if(selectedRectangleVertex[1] !== null){
+              selectShapeCategory = "rectangle"
+              selectShapeIdx = i
+              selectRectangleVertexIdx = selectedRectangleVertex[1]
+              break
+          }
         }
       }
     }
@@ -566,6 +577,19 @@ function eventMoveSelect(e) {
     }else if(selectShapeCategory === "polygon"){
       shapes[selectShapeIdx].vertices[selectPolygonVertexIdx][0] = x
       shapes[selectShapeIdx].vertices[selectPolygonVertexIdx][1] = y
+    } else if (selectShapeCategory === "rectangle"){
+      let vertexSameX, vertexSameY
+      for(let i = 0; i < 4; i++){
+        if (shapes[selectShapeIdx].vertices[i][0] === shapes[selectShapeIdx].vertices[selectRectangleVertexIdx][0] && selectRectangleVertexIdx !== i){
+          vertexSameX = shapes[selectShapeIdx].vertices[i]
+        }
+        if (shapes[selectShapeIdx].vertices[i][1] === shapes[selectShapeIdx].vertices[selectRectangleVertexIdx][1] && selectRectangleVertexIdx !== i){
+          vertexSameY = shapes[selectShapeIdx].vertices[i]
+        }
+      }
+      shapes[selectShapeIdx].vertices[selectRectangleVertexIdx] = [x, y]
+      vertexSameX[0] = x
+      vertexSameY[1] = y
     }
   }
 }
