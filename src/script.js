@@ -29,6 +29,7 @@ const allowedRadius = 0.07
 let selectShapeCategory = ""
 let selectShapeIdx = -1
 let selectLineVertexIdx = -1
+let selectPolygonVertexIdx = -1
 
 let currentEventText = document.getElementById("current-action-text")
 
@@ -59,6 +60,7 @@ isMovePolyogn = false;
 isDownMove = false;
 let currentEvent = "";
 let currentShape;
+let currentColor = [1, 0, 0, 1]
 
 render();
 
@@ -107,25 +109,6 @@ function render() {
   // Konfigurasi cara isi atribut cPosition
   gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
 
-  // Gambar tiap shape
-  // console.log("shapes length", shapes.length);
-  // for (let shapeIdx = 0; shapeIdx < shapes.length; shapeIdx++) {
-  //   let first = 0
-  //   for (let shapeBefore = 0; shapeBefore < shapeIdx; shapeBefore++){
-  //     first += shapes[shapeBefore].vertices.length
-  //   }
-  //   switch (shapes[shapeIdx].category) {
-  //     case "line":
-  //       gl.drawArrays(gl.LINES, first, 2);
-  //       break;
-  //     case "polygon":
-  //       let count = shapes[shapeIdx].vertices.length
-  //       gl.drawArrays(gl.TRIANGLE_FAN, first, count);
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // }
   let vIdx = 0;
   shapes.forEach(shape => {
     let count = shape.vertices.length;
@@ -176,27 +159,6 @@ function handleSquare() {
     eventFinishSquare(event)
   }
 }
-
-// function handleSquare() {
-//   currentEvent = 'square'
-//   currentEventText.innerHTML = "Current Event: Square"
-//   // canvas.addEventListener('click', function(event) {
-//   //   event.preventDefault()
-//   // })
-
-//   canvas.addEventListener('mousedown', (event) => {
-//     eventClickSquare(event)
-//   })
-
-//   canvas.addEventListener('mousemove', (event) => {
-//     eventMoveSquare(event)
-//   })
-
-//   canvas.addEventListener('mouseup', (event) => {
-//     eventFinishSquare(event)
-//   })
-// }
-
 
 function handlePolygon() {
   currentEvent = 'polygon'
@@ -253,7 +215,7 @@ function eventClickLine(e) {
 
     for (let i = 0; i < 2; i++) {
       lineVertices.push([x, y]);
-      lineColor.push([0, 0, 0, 1]);
+      lineColor.push(currentColor);
     }
 
     isDownLine = true
@@ -304,7 +266,7 @@ function eventClickSquare(e) {
     for (let i = 0; i < 4; i++) {
       squareVertices.push([x, y]);
       squareColor.push(
-        [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1]);
+        currentColor, currentColor, currentColor, currentColor);
     }
 
     isDownSquare = true
@@ -379,22 +341,22 @@ function eventClickPolygon(e) {
     y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
 
     if(shapes.length === 0 ){
-      var polygon = new Polygon([[x, y]], [[0, 0, 0, 1]])
+      var polygon = new Polygon([[x, y]], [currentColor])
       shapes.push(polygon)
     }else if(shapes[shapes.length - 1].category !== "polygon"){
-      var polygon = new Polygon([[x, y]], [[0, 0, 0, 1]])
+      var polygon = new Polygon([[x, y]], [currentColor])
       shapes.push(polygon)
     }else if(shapes[shapes.length - 1].category === "polygon"){
       if(!shapes[shapes.length - 1].isFinish){
         shapes[shapes.length - 1].vertices.push([x, y])
-        shapes[shapes.length - 1].color.push([0, 0, 0, 1])
+        shapes[shapes.length - 1].color.push(currentColor)
         if (shapes[shapes.length - 1].vertices.length == 2) {
           shapes[shapes.length - 1].vertices.push([0, 0])
-          shapes[shapes.length - 1].color.push([0, 0, 0, 1]) // Dikasih warna
+          shapes[shapes.length - 1].color.push(currentColor) // Dikasih warna
           isMovePolyogn = true
         }
       }else{
-        var polygon = new Polygon([[x, y]], [[0, 0, 0, 1]])
+        var polygon = new Polygon([[x, y]], [currentColor])
         shapes.push(polygon)
       }
     }
@@ -423,7 +385,7 @@ function eventClickRectangle(e) {
 
     for (let i = 0; i < 6; i++) {
       currentShape.vertices.push([x, y]);
-      currentShape.color.push([0, 0, 0, 1]);
+      currentShape.color.push(currentColor);
     }
 
     shapes.push(currentShape);
@@ -498,6 +460,18 @@ function eventClickSelect(e) {
             selectShapeIdx = i
             break
           }
+        }else if(shapes[i].category === "polygon"){
+          var vertexIdx = 0
+          for(let temp of shapes[i].vertices){
+            referenceVertex = euclideanDistance(temp, [x, y])
+            if(referenceVertex < allowedRadius){
+              selectShapeCategory = "polygon"
+              selectShapeIdx = i
+              selectPolygonVertexIdx = vertexIdx
+              break
+            }
+            vertexIdx++
+          }
         }
       }
     }
@@ -537,6 +511,9 @@ function eventMoveSelect(e) {
       shapes[selectShapeIdx].vertices[2][1] = shapes[selectShapeIdx].vertices[0][1] + dy
       shapes[selectShapeIdx].vertices[3][1] = shapes[selectShapeIdx].vertices[0][1] + dy
       shapes[selectShapeIdx].vertices[1][0] = shapes[selectShapeIdx].vertices[0][0] + dx
+    }else if(selectShapeCategory === "polygon"){
+      shapes[selectShapeIdx].vertices[selectPolygonVertexIdx][0] = x
+      shapes[selectShapeIdx].vertices[selectPolygonVertexIdx][1] = y
     }
   }
 }
@@ -544,4 +521,20 @@ function eventMoveSelect(e) {
 function eventFinishSelect(e) {
   isDownMove = false
   console.log("up")
+}
+
+function hexToRgb(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : null;
+}
+
+function getColor(){
+  var colorHex = document.getElementById('current-color').value
+  var rgb = hexToRgb(colorHex)
+  var selectedColor = [rgb.r/255, rgb.g/255, rgb.b/255,  1]
+  currentColor = selectedColor
 }

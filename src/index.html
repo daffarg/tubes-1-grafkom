@@ -20,7 +20,7 @@
                 <button onclick="handlePolygon()">Polygon</button>
                 <button onclick="finalizePolygon()">Finish Polygon</button>
                 <button onclick="handleSelect()">Select Vertex</button>
-                <input type="color" value="#ff0000"> 
+                <input type="color" value="#ff0000" id="current-color" onchange="getColor()"> 
             </div>
             <h2 id="current-action-text"> Current Action: <b class="current-action">None</b></h2>
             <div class="transform-translate">
