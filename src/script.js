@@ -17,6 +17,7 @@ const fSource = `
 `;
 
 const canvas = document.querySelector('#canvas')
+const shapeSelect = document.getElementById('shapes')
 const gl = setupWebGL(canvas);
 gl.viewport(0, 0, canvas.width, canvas.height);
 gl.clearColor(0.8, 0.8, 0.8, 1.0);
@@ -216,6 +217,14 @@ function handleDisplayPolygonButton(){
   }else{
     document.getElementById('finalizePolygon').style.display = 'none'
     document.getElementById('deletePolygonVertex').style.display = 'none'
+  }
+}
+
+function handleVertexColorChange() {
+  currentEvent = 'changeVertexColor'
+  currentEventText.innerHTML = "Current Event: Change Vertex Color"
+  canvas.onclick = function (event) {
+    eventClickVertexColorChange(event);
   }
 }
 
@@ -477,7 +486,7 @@ function eventClickSelect(e) {
       y = 1 - (2 * (e.clientY - canvas.offsetTop)) / canvas.clientHeight;
 
       for (let i = 0; i < shapes.length; i++) {
-        if (shapes[i].category === "line") {
+        if (shapes[i].category === "line" && shapeSelect.value === "line") {
           console.log(shapes[i].vertices)
           let firstVertex = euclideanDistance(shapes[i].vertices[0], [x, y])
           console.log("firstVertex", firstVertex)
@@ -494,7 +503,8 @@ function eventClickSelect(e) {
             selectShapeIdx = i
             break
           }
-        } else if (shapes[i].category === "square") {
+        } else if (shapes[i].category === "square" && shapeSelect.value === "square") {
+          console.log("masuk")
           referenceVertex = euclideanDistance(shapes[i].vertices[2], [x, y])
           if (referenceVertex < allowedRadius) {
             console.log("kotak masuk")
@@ -502,7 +512,7 @@ function eventClickSelect(e) {
             selectShapeIdx = i
             break
           }
-        }else if(shapes[i].category === "polygon"){
+        }else if(shapes[i].category === "polygon" && shapeSelect.value === "polygon"){
           var vertexIdx = 0
           for(let temp of shapes[i].vertices){
             referenceVertex = euclideanDistance(temp, [x, y])
@@ -604,4 +614,39 @@ function translateVertical(input){
 
 function translateReset(input){
   input.value = 0
+}
+
+function eventClickVertexColorChange(event) {
+  console.log(currentEvent)
+  if (currentEvent = 'changeVertexColor') {
+    let x, y;
+    // normalize
+    x = (2 * (event.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
+    y = 1 - (2 * (event.clientY - canvas.offsetTop)) / canvas.clientHeight;
+
+    let idxOnRange = -1
+    for (let i = 0; i < shapes.length; i++) {
+      if (shapes[i].category === "line" && shapeSelect.value === "line") {
+        console.log(shapes[i].vertices)
+        for (let j = 0; shapes[i].vertices.length; j ++) {
+          referenceVertex = euclideanDistance(shapes[i].vertices[j], [x, y])
+          console.log(referenceVertex < allowedRadius)
+          if (referenceVertex < allowedRadius) {
+            shapes[i].color[j] = currentColor
+            break
+          }
+        }
+      } else if (shapes[i].category === "square" && shapeSelect.value === "square") {
+        console.log("masuk")
+        for (let j = 0; shapes[i].vertices.length; j ++) {
+          referenceVertex = euclideanDistance(shapes[i].vertices[j], [x, y])
+          console.log(referenceVertex < allowedRadius)
+          if (referenceVertex < allowedRadius) {
+            shapes[i].color[j] = currentColor
+            break
+          }
+        }
+      }
+    }
+  }
 }
