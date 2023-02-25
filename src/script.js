@@ -590,6 +590,14 @@ function translateHorizontal(input){
     }
 }
 
-function translateHorizontalReset(input){
+function translateVertical(input){
+  var valueRange = input.value
+  var normalizeValue = valueRange/1000000
+  for(let vertex of shapes[selectShapeIdx].vertices){ //Tekan dulu salah satu vertex dari model yang dibuat pakai event select vertex
+    vertex[1] += normalizeValue
+  }
+}
+
+function translateReset(input){
   input.value = 0
 }
