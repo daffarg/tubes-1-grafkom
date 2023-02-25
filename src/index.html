@@ -34,7 +34,7 @@
             </div>
             <div class="transform-rotate">
                 <h3>Rotate</h3>
-                <input type="range" min="1" max="500" class="transform-slider" id="transform-rotate" disabled>
+                <input type="range" min="-360" max="360" class="transform-slider" id="transform-rotate" oninput="rotateModel(this)" onmouseup="translateReset(this)">
             </div>
         </div>
     </div>
