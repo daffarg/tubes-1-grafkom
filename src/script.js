@@ -27,11 +27,13 @@ let shapes = []
 let vertices = []
 let colors = []
 
-const allowedRadius = 0.07
+const allowedRadius = 0.1
 let selectShapeCategory = ""
 let selectShapeIdx = -1
 let selectLineVertexIdx = -1
+let selectSquareVertexIdx = -1
 let selectPolygonVertexIdx = -1
+
 
 let currentEventText = document.getElementById("current-action-text")
 
@@ -514,13 +516,17 @@ function eventClickSelect(e) {
           }
         } else if (shapes[i].category === "square" && shapeSelect.value === "square") {
           console.log("masuk square")
-          referenceVertex = euclideanDistance(shapes[i].vertices[2], [x, y])
-          if (referenceVertex < allowedRadius) {
-            console.log("kotak masuk")
-            selectShapeCategory = "square"
-            selectShapeIdx = i
-            break
+          for (let j = 0; j < shapes[i].vertices.length; j++) {
+            referenceVertex = euclideanDistance(shapes[i].vertices[j], [x, y])
+            if (referenceVertex < allowedRadius) {
+              console.log("kotak masuk")
+              selectShapeCategory = "square"
+              selectSquareVertexIdx = j
+              selectShapeIdx = i
+              break
+            }
           }
+          
         } else if (shapes[i].category === "polygon" && shapeSelect.value === "polygon") {
           var vertexIdx = 0
           for (let temp of shapes[i].vertices) {
@@ -562,27 +568,105 @@ function eventMoveSelect(e) {
       shapes[selectShapeIdx].vertices[selectLineVertexIdx][1] = y
     } else if (selectShapeCategory === "square") {
       // console.log(i);
-      let dx = x - shapes[selectShapeIdx].vertices[0][0]
-      let dy = y - shapes[selectShapeIdx].vertices[0][1]
 
-      let side = Math.min(Math.abs(dx), Math.abs(dy))
+      if (selectSquareVertexIdx == 0) {
+        console.log(0)
 
-      if (dy > 0) {
-        dy = side
-      } else {
-        dy = -side
+        // kurangi dengan yang bersebrangan secara diagonal
+        let dx = x - shapes[selectShapeIdx].vertices[2][0]
+        let dy = y - shapes[selectShapeIdx].vertices[2][1]
+
+        let side = Math.min(Math.abs(dx), Math.abs(dy))
+
+        if (dy > 0) {
+          dy = side
+        } else {
+          dy = -side
+        }
+  
+        if (dx > 0) {
+          dx = side
+        } else {
+          dx = -side
+        }
+
+        shapes[selectShapeIdx].vertices[0][0] = shapes[selectShapeIdx].vertices[2][0] + dx
+        shapes[selectShapeIdx].vertices[0][1] = shapes[selectShapeIdx].vertices[2][1] + dy
+        shapes[selectShapeIdx].vertices[1][1] = shapes[selectShapeIdx].vertices[2][1] + dy
+        shapes[selectShapeIdx].vertices[3][0] = shapes[selectShapeIdx].vertices[2][0] + dx
+      } else if (selectSquareVertexIdx == 1) {
+
+        // kurangi dengan yang bersebrangan secara diagonal
+        let dx = x - shapes[selectShapeIdx].vertices[3][0]
+        let dy = y - shapes[selectShapeIdx].vertices[3][1]
+
+        let side = Math.min(Math.abs(dx), Math.abs(dy))
+
+        if (dy > 0) {
+          dy = side
+        } else {
+          dy = -side
+        }
+  
+        if (dx > 0) {
+          dx = side
+        } else {
+          dx = -side
+        }
+
+        shapes[selectShapeIdx].vertices[1][0] = shapes[selectShapeIdx].vertices[3][0] + dx
+        shapes[selectShapeIdx].vertices[1][1] = shapes[selectShapeIdx].vertices[3][1] + dy
+        shapes[selectShapeIdx].vertices[0][1] = shapes[selectShapeIdx].vertices[3][1] + dy
+        shapes[selectShapeIdx].vertices[2][0] = shapes[selectShapeIdx].vertices[3][0] + dx
+      } else if (selectSquareVertexIdx == 2) {
+
+        // kurangi dengan yang bersebrangan secara diagonal
+        dx = x - shapes[selectShapeIdx].vertices[0][0]
+        dy = y - shapes[selectShapeIdx].vertices[0][1]
+
+        let side = Math.min(Math.abs(dx), Math.abs(dy))
+
+        if (dy > 0) {
+          dy = side
+        } else {
+          dy = -side
+        }
+  
+        if (dx > 0) {
+          dx = side
+        } else {
+          dx = -side
+        }
+
+        shapes[selectShapeIdx].vertices[2][0] = shapes[selectShapeIdx].vertices[0][0] + dx
+        shapes[selectShapeIdx].vertices[2][1] = shapes[selectShapeIdx].vertices[0][1] + dy
+        shapes[selectShapeIdx].vertices[3][1] = shapes[selectShapeIdx].vertices[0][1] + dy
+        shapes[selectShapeIdx].vertices[1][0] = shapes[selectShapeIdx].vertices[0][0] + dx
+      } else if (selectSquareVertexIdx == 3) {
+        dx = x - shapes[selectShapeIdx].vertices[1][0]
+        dy = y - shapes[selectShapeIdx].vertices[1][1]
+
+        let side = Math.min(Math.abs(dx), Math.abs(dy))
+
+        if (dy > 0) {
+          dy = side
+        } else {
+          dy = -side
+        }
+  
+        if (dx > 0) {
+          dx = side
+        } else {
+          dx = -side
+        }
+
+        shapes[selectShapeIdx].vertices[3][0] = shapes[selectShapeIdx].vertices[1][0] + dx
+        shapes[selectShapeIdx].vertices[3][1] = shapes[selectShapeIdx].vertices[1][1] + dy
+        shapes[selectShapeIdx].vertices[2][1] = shapes[selectShapeIdx].vertices[1][1] + dy
+        shapes[selectShapeIdx].vertices[0][0] = shapes[selectShapeIdx].vertices[1][0] + dx
       }
 
-      if (dx > 0) {
-        dx = side
-      } else {
-        dx = -side
-      }
-
-      shapes[selectShapeIdx].vertices[2][0] = shapes[selectShapeIdx].vertices[0][0] + dx
-      shapes[selectShapeIdx].vertices[2][1] = shapes[selectShapeIdx].vertices[0][1] + dy
-      shapes[selectShapeIdx].vertices[3][1] = shapes[selectShapeIdx].vertices[0][1] + dy
-      shapes[selectShapeIdx].vertices[1][0] = shapes[selectShapeIdx].vertices[0][0] + dx
+      
     } else if (selectShapeCategory === "polygon") {
       shapes[selectShapeIdx].vertices[selectPolygonVertexIdx][0] = x
       shapes[selectShapeIdx].vertices[selectPolygonVertexIdx][1] = y
