@@ -34,6 +34,8 @@ let selectLineVertexIdx = -1
 let selectSquareVertexIdx = -1
 let selectPolygonVertexIdx = -1
 
+let prevHorizontalTranslateVal = 0
+let prevVerticalTranslateVal = 0
 
 let currentEventText = document.getElementById("current-action-text")
 
@@ -457,7 +459,7 @@ function eventClickRectangle(e) {
 
   } else if (currentEvent === "RECT_DRAW") { // Lagi ngegambar
     console.log("Rect Draw");
-    currentEvent = "";
+    currentEvent = "RECT_MODE";
     currentShape = null;
   }
 }
@@ -713,20 +715,22 @@ function getColor() {
 function translateHorizontal(input) {
   if (currentEvent === 'move') {
     var valueRange = input.value
-    var normalizeValue = valueRange / 1000000
+    var normalizeValue = valueRange / 100000
     for (let vertex of shapes[selectShapeIdx].vertices) { //Tekan dulu salah satu vertex dari model yang dibuat pakai event select vertex
-      vertex[0] += normalizeValue
+      vertex[0] += normalizeValue - prevHorizontalTranslateVal
     }
+    prevHorizontalTranslateVal = normalizeValue
   }
 }
 
 function translateVertical(input) {
   if (currentEvent === 'move') {
     var valueRange = input.value
-    var normalizeValue = valueRange / 1000000
+    var normalizeValue = valueRange / 100000
     for (let vertex of shapes[selectShapeIdx].vertices) { //Tekan dulu salah satu vertex dari model yang dibuat pakai event select vertex
-      vertex[1] += normalizeValue
+      vertex[1] += normalizeValue- prevVerticalTranslateVal
     }
+    prevVerticalTranslateVal = normalizeValue
   }
 }
 
