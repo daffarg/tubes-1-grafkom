@@ -774,3 +774,36 @@ function eventClickLineLengthChange(event) {
     }
   }
 }
+
+function saveToFile() {
+  // Create a new Blob object
+  const blob = new Blob([JSON.stringify(shapes)], { type: 'text/plain' });
+
+  // Generate a URL for the blob
+  const url = URL.createObjectURL(blob);
+
+  // Create a new link element
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'data.txt';
+
+  // Simulate a click on the link element to download the file
+  document.body.appendChild(link);
+  link.click();
+
+  // Clean up
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+function uploadFromFile(event){
+  const file = event.target.files[0];
+  const reader = new FileReader();
+
+  reader.addEventListener('load', (event) => {
+    const text = event.target.result;
+    shapes = JSON.parse(text)
+  });
+
+  reader.readAsText(file);
+}
