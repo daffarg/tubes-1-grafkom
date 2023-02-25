@@ -513,7 +513,7 @@ function eventClickSelect(e) {
             break
           }
         } else if (shapes[i].category === "square" && shapeSelect.value === "square") {
-          console.log("masuk")
+          console.log("masuk square")
           referenceVertex = euclideanDistance(shapes[i].vertices[2], [x, y])
           if (referenceVertex < allowedRadius) {
             console.log("kotak masuk")
