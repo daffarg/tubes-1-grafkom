@@ -19,5 +19,4 @@ Model-model tersebut dapat digambar menggunakan kontrol mouse. Setelah model-mod
 ## Cara Menjalankan Program
 
 1. Buka _file_ index.html pada _browser_ kesayangan Anda
-2. Klik tombol Help untuk melihat langkah penggunaan fitur
 3. _Enjoy!_
