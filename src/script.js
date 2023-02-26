@@ -46,15 +46,6 @@ let animationShapesIdx = []
 
 let currentEventText = document.getElementById("current-action-text")
 
-// var polygon = {
-//   vertex: [],
-//   color: []
-// }
-
-// var polygonTemp = {
-//   vertex: [],
-//   color: []
-// }
 
 //  Load shaders and initialize attribute buffers
 const program = initShaders(gl, vSource, fSource);
@@ -122,8 +113,6 @@ function render() {
       vertices.push(shapes[i].vertices[j]);
     }
   }
-  // console.log(shapes)
-  // console.log(vertices)
 
   for (let i = 0; i < shapes.length; i++) {
     if (shapes[i].category === "padding") {
@@ -167,6 +156,8 @@ function render() {
 
   window.requestAnimFrame(render);
 }
+
+/** ============= Handle Click Button ========================= */
 
 function handleLine() {
   currentEvent = 'line'
@@ -281,6 +272,9 @@ function handleSelectVertexForAnimation() {
   }
 }
 
+
+/** ======================= Line Event ========================= */
+
 function eventClickLine(e) {
   if (currentEvent === 'line') {
     console.log("down")
@@ -330,6 +324,10 @@ function eventFinishLine(e) {
   console.log(shapes)
   console.log("up");
 }
+
+
+
+/** ======================= Square Event ========================= */
 
 function eventClickSquare(e) {
   if (currentEvent === 'square') {
@@ -400,6 +398,10 @@ function eventFinishSquare(e) {
   console.log("up");
 }
 
+
+
+
+/** ======================= Polygon Event ========================= */
 
 function eventMovePolygon(e) {
   if (isMovePolyogn) {
@@ -477,6 +479,11 @@ function deletePolygonVertex(e) { //Menghapus Vertex polygon yang diklik ketika 
   }
 }
 
+
+
+
+/** ======================= Rectangle Event ========================= */
+
 function eventClickRectangle(e) {
   let x, y;
   x = (2 * (e.clientX - canvas.offsetLeft)) / canvas.clientWidth - 1;
@@ -524,6 +531,10 @@ function eventMoveRectangle(e) {
     ]
   }
 }
+
+
+
+/** ======================= Select Event for Resize and Move Vertex  ========================= */
 
 function eventClickSelect(e) {
   if (currentEvent === "move") {
@@ -734,6 +745,8 @@ function eventFinishSelect(e) {
   console.log("up")
 }
 
+/** ======================= Get Current Color ========================= */
+
 function hexToRgb(hex) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result ? {
@@ -750,7 +763,9 @@ function getColor() {
   currentColor = selectedColor
 }
 
-/** Transalsi dan Rotasi Percobaan hapus comment jika ingin mencoba*/
+
+
+/** ======================= Translasi and Rotate ========================= */
 
 function translateHorizontal(input) {
   if (currentEvent === 'move') {
@@ -816,6 +831,10 @@ function rotateModelSelf(input) { //Rotate terhadapt diri sendiri canvas
   }
 }
 
+
+
+/** ======================= Change vertex color Event ========================= */
+
 function eventClickVertexColorChange(event) {
   console.log(currentEvent)
   if (currentEvent = 'changeVertexColor') {
@@ -873,6 +892,10 @@ function eventClickVertexColorChange(event) {
   }
 }
 
+
+
+/** ======================= Change Line Length  ========================= */
+
 function eventClickLineLengthChange(event) {
   if (currentEvent === 'changeLineLength') {
     let x, y;
@@ -915,6 +938,10 @@ function eventClickLineLengthChange(event) {
   }
 }
 
+
+
+/** ======================= Handle File Event ========================= */
+
 function saveToFile() {
   // Create a new Blob object
   const blob = new Blob([JSON.stringify(shapes)], { type: 'text/plain' });
@@ -947,6 +974,10 @@ function uploadFromFile(event){
 
   reader.readAsText(file);
 }
+
+
+
+/** ======================= Animation ========================= */
 
 function startAnimation() {
   document.getElementById("current-animation-state").innerHTML = "Animation: True"
